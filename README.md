@@ -1,7 +1,7 @@
 # MiR Development
 
 ## Important Notes
-```ALL FILES MIR REPLACED ARE IN ..\packages\studio-base\src\mir\```
+```ALL FILES MIR OVERWROTE ARE IN ..\packages\studio-base\src\mir\```
 
 Currently main is based on Foxglove release/v1.86.1
 
