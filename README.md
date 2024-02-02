@@ -13,7 +13,8 @@ Move the following files over from the original MiR Project
 - OccupancyGrids.ts -> OccupancyGrids.ts
 - PointCloudsAndLaserScans.ts -> PointClouds.ts & LaserScans.ts
 - PoseArrays.ts -> PoseArrays.ts
-- ros.ts - DONE
+- DONE defaultLayout.ts -> defaultLayout.ts
+- DONE ros.ts -> ros.ts
 
 ## Branches
 - ```main``` - mir branch with latest foxglove release

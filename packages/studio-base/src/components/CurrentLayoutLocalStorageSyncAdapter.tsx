@@ -15,7 +15,7 @@ import {
 } from "@foxglove/studio-base/context/CurrentLayoutContext";
 import { LayoutData } from "@foxglove/studio-base/context/CurrentLayoutContext/actions";
 import { usePlayerSelection } from "@foxglove/studio-base/context/PlayerSelectionContext";
-import { defaultLayout } from "@foxglove/studio-base/providers/CurrentLayoutProvider/defaultLayout";
+import { defaultLayout } from "../mir/defaultLayout";
 import { migratePanelsState } from "@foxglove/studio-base/services/migrateLayout";
 
 function selectLayoutData(state: LayoutState) {
