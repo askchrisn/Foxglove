@@ -12,7 +12,7 @@ import { COLLADA_CONE_Y_UP_MESH_RESOURCE, COLLADA_CONE_Z_UP_MESH_RESOURCE } from
 import useDelayedFixture from "./useDelayedFixture";
 import { DEFAULT_CAMERA_STATE } from "../camera";
 import ThreeDeePanel from "../index";
-import { Marker } from "../ros";
+import { Marker } from "../../../mir/ros";
 
 export default {
   title: "panels/ThreeDeeRender",

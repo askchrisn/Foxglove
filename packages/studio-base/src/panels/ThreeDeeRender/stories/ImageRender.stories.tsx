@@ -14,7 +14,7 @@ import { useReadySignal } from "@foxglove/studio-base/stories/ReadySignalContext
 
 import { PNG_TEST_IMAGE, rad2deg, SENSOR_FRAME_ID } from "./common";
 import ThreeDeePanel from "../index";
-import { CameraInfo, CompressedImage as RosCompressedImage, Image } from "../ros";
+import { CameraInfo, CompressedImage as RosCompressedImage, Image } from "../../../mir/ros";
 
 export default {
   title: "panels/ThreeDeeRender/Images",

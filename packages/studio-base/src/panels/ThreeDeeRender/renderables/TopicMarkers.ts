@@ -7,7 +7,7 @@ import { RenderableMeshResource } from "./markers/RenderableMeshResource";
 import { missingTransformMessage, MISSING_TRANSFORM } from "./transforms";
 import type { IRenderer } from "../IRenderer";
 import { BaseUserData, Renderable } from "../Renderable";
-import { Marker, MarkerAction, MarkerType } from "../ros";
+import { Marker, MarkerAction, MarkerType } from "../../../mir/ros";
 import { BaseSettings } from "../settings";
 import { updatePose } from "../updatePose";
 

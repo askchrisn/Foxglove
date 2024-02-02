@@ -8,7 +8,7 @@ import type { Time } from "@foxglove/rostime";
 import type { MessageEvent } from "@foxglove/studio";
 
 import { stringToRgba } from "../color";
-import type { ColorRGBA, Marker, Point } from "../ros";
+import type { ColorRGBA, Marker, Point } from "../../../mir/ros";
 import type { Pose } from "../transforms";
 
 export type MarkerArgs = {

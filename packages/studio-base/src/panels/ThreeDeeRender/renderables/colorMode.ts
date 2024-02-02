@@ -10,7 +10,7 @@ import { BaseSettings } from "@foxglove/studio-base/panels/ThreeDeeRender/settin
 
 import { rgbaGradient, rgbaToLinear, SRGBToLinear, stringToRgba } from "../color";
 import { clamp } from "../math";
-import type { ColorRGBA } from "../ros";
+import type { ColorRGBA } from "../../../mir/ros";
 
 export type ColorConverter = (output: ColorRGBA, colorValue: number) => void;
 

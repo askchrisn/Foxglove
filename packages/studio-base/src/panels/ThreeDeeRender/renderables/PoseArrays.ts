@@ -36,7 +36,7 @@ import {
   NavPath,
   MarkerType,
   MarkerAction,
-} from "../ros";
+} from "../../../mir/ros";
 import {
   BaseSettings,
   fieldGradient,

@@ -15,7 +15,7 @@ import {
   RegionOfInterest,
   Vector2,
   Vector3,
-} from "../ros";
+} from "../../../mir/ros";
 
 const tempVec = { x: 0, y: 0, z: 0 };
 const tempVec2 = { x: 0, y: 0, z: 0 };

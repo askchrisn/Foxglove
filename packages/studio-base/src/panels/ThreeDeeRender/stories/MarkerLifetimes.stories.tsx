@@ -12,7 +12,7 @@ import PanelSetup from "@foxglove/studio-base/stories/PanelSetup";
 import { makeFail, makePass, QUAT_IDENTITY, rad2deg, TEST_COLORS, VEC3_ZERO } from "./common";
 import useDelayedFixture from "./useDelayedFixture";
 import ThreeDeePanel from "../index";
-import { TransformStamped } from "../ros";
+import { TransformStamped } from "../../../mir/ros";
 
 export default {
   title: "panels/ThreeDeeRender",

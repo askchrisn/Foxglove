@@ -11,7 +11,7 @@ import PanelSetup from "@foxglove/studio-base/stories/PanelSetup";
 import { makeColor, QUAT_IDENTITY, rad2deg, packRvizRgba, VEC3_ZERO } from "./common";
 import useDelayedFixture from "./useDelayedFixture";
 import ThreeDeePanel from "../index";
-import { Marker, MarkerType, PointCloud2, TransformStamped } from "../ros";
+import { Marker, MarkerType, PointCloud2, TransformStamped } from "../../../mir/ros";
 
 export default {
   title: "panels/ThreeDeeRender",

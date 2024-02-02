@@ -15,7 +15,7 @@ import { SceneExtension } from "../SceneExtension";
 import { SettingsTreeEntry } from "../SettingsManager";
 import { stringToRgba } from "../color";
 import { vec3TupleApproxEquals } from "../math";
-import { Marker, MarkerAction, MarkerType, TIME_ZERO, Vector3 } from "../ros";
+import { Marker, MarkerAction, MarkerType, TIME_ZERO, Vector3 } from "../../../mir/ros";
 import { CustomLayerSettings, PRECISION_DEGREES, PRECISION_DISTANCE } from "../settings";
 import { makePose, xyzrpyToPose } from "../transforms";
 

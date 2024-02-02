@@ -26,7 +26,7 @@ import {
   PolygonStamped,
   POLYGON_STAMPED_DATATYPES,
   TIME_ZERO,
-} from "../ros";
+} from "../../../mir/ros";
 import { BaseSettings } from "../settings";
 import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
 import { makePose } from "../transforms";

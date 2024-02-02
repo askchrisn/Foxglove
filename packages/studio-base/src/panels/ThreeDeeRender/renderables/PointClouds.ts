@@ -48,7 +48,7 @@ import {
   POINTCLOUD_DATATYPES as ROS_POINTCLOUD_DATATYPES,
   PointField,
   PointFieldType,
-} from "../ros";
+} from "../../../mir/ros";
 import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
 import { makePose, Pose } from "../transforms";
 

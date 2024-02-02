@@ -11,7 +11,7 @@ import PanelSetup from "@foxglove/studio-base/stories/PanelSetup";
 import { makeColor, rad2deg, TEST_COLORS } from "./common";
 import useDelayedFixture from "./useDelayedFixture";
 import ThreeDeePanel from "../index";
-import { Header, Marker } from "../ros";
+import { Header, Marker } from "../../../mir/ros";
 
 export default {
   title: "panels/ThreeDeeRender",

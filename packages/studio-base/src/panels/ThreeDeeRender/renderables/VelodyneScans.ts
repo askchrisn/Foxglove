@@ -35,7 +35,7 @@ import {
 import type { AnyRendererSubscription, IRenderer } from "../IRenderer";
 import { SceneExtension } from "../SceneExtension";
 import { SettingsTreeEntry, SettingsTreeNodeWithActionHandler } from "../SettingsManager";
-import { VELODYNE_SCAN_DATATYPES } from "../ros";
+import { VELODYNE_SCAN_DATATYPES } from "../../../mir/ros";
 import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
 import { makePose } from "../transforms";
 

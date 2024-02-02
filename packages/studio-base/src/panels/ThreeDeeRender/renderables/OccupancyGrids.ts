@@ -25,7 +25,7 @@ import {
   normalizeInt8Array,
   normalizeTime,
 } from "../normalizeMessages";
-import { ColorRGBA, OccupancyGrid, OCCUPANCY_GRID_DATATYPES } from "../ros";
+import { ColorRGBA, OccupancyGrid, OCCUPANCY_GRID_DATATYPES } from "../../../mir/ros";
 import { BaseSettings } from "../settings";
 import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
 

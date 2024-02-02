@@ -17,7 +17,7 @@ import {
 import useDelayedFixture from "./useDelayedFixture";
 import { DEFAULT_CAMERA_STATE } from "../camera";
 import ThreeDeePanel from "../index";
-import { Marker } from "../ros";
+import { Marker } from "../../../mir/ros";
 
 export default {
   title: "panels/ThreeDeeRender",

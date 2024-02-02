@@ -14,7 +14,7 @@ import { QUAT_IDENTITY, rad2deg } from "./common";
 import useDelayedFixture from "./useDelayedFixture";
 import ThreeDeePanel from "../index";
 import { PublishClickType } from "../renderables/PublishClickTool";
-import { TransformStamped } from "../ros";
+import { TransformStamped } from "../../../mir/ros";
 
 export default {
   title: "panels/ThreeDeeRender/PublishClickTool",

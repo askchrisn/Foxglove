@@ -22,7 +22,7 @@ import {
   normalizeVector3,
   normalizeVector3s,
 } from "../normalizeMessages";
-import { Marker, MarkerArray, MARKER_ARRAY_DATATYPES, MARKER_DATATYPES } from "../ros";
+import { Marker, MarkerArray, MARKER_ARRAY_DATATYPES, MARKER_DATATYPES } from "../../../mir/ros";
 import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
 import { makePose } from "../transforms";
 

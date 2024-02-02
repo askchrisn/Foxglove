@@ -40,7 +40,7 @@ import {
   MarkerType,
   Quaternion,
   Vector3,
-} from "../ros";
+} from "../../../mir/ros";
 import {
   BaseSettings,
   CustomLayerSettings,

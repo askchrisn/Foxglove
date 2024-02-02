@@ -28,7 +28,7 @@ import {
   MarkerType,
   TIME_ZERO,
   Vector3,
-} from "../ros";
+} from "../../../mir/ros";
 import { BaseSettings, fieldLineWidth, PRECISION_DISTANCE } from "../settings";
 import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
 import { makePose } from "../transforms";

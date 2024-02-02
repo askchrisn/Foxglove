@@ -42,7 +42,7 @@ import {
   POSE_STAMPED_DATATYPES,
   PoseWithCovariance,
   ColorRGBA,
-} from "../ros";
+} from "../../../mir/ros";
 import { BaseSettings, PRECISION_DISTANCE } from "../settings";
 import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
 import { makePose } from "../transforms";

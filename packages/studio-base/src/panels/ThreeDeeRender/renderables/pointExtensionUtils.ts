@@ -26,7 +26,7 @@ import {
   FS_SRGB_TO_LINEAR,
 } from "./colorMode";
 import { POINTCLOUD_DATATYPES as FOXGLOVE_POINTCLOUD_DATATYPES } from "../foxglove";
-import { POINTCLOUD_DATATYPES as ROS_POINTCLOUD_DATATYPES } from "../ros";
+import { POINTCLOUD_DATATYPES as ROS_POINTCLOUD_DATATYPES } from "../../../mir/ros";
 
 export type LayerSettingsPointExtension = BaseSettings &
   ColorModeSettings & {

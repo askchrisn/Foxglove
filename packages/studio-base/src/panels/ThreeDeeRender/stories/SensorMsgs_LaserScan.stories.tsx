@@ -13,7 +13,7 @@ import PanelSetup from "@foxglove/studio-base/stories/PanelSetup";
 import { QUAT_IDENTITY, rad2deg } from "./common";
 import useDelayedFixture from "./useDelayedFixture";
 import ThreeDeePanel from "../index";
-import { LaserScan, PointCloud2, TransformStamped } from "../ros";
+import { LaserScan, PointCloud2, TransformStamped } from "../../../mir/ros";
 
 export default {
   title: "panels/ThreeDeeRender/LaserScan",

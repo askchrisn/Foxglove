@@ -42,7 +42,7 @@ import {
   IMAGE_DATATYPES as ROS_IMAGE_DATATYPES,
   COMPRESSED_IMAGE_DATATYPES as ROS_COMPRESSED_IMAGE_DATATYPES,
   CAMERA_INFO_DATATYPES,
-} from "../ros";
+} from "../../../mir/ros";
 import { BaseSettings, PRECISION_DISTANCE } from "../settings";
 import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
 import { makePose } from "../transforms";

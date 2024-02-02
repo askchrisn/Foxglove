@@ -26,7 +26,7 @@ import { PartialMessage, PartialMessageEvent, SceneExtension } from "../SceneExt
 import { SettingsTreeEntry, SettingsTreeNodeWithActionHandler } from "../SettingsManager";
 import { LASERSCAN_DATATYPES as FOXGLOVE_LASERSCAN_DATATYPES } from "../foxglove";
 import { normalizeFloat32Array, normalizeTime, normalizePose } from "../normalizeMessages";
-import { LASERSCAN_DATATYPES as ROS_LASERSCAN_DATATYPES, LaserScan as RosLaserScan } from "../ros";
+import { LASERSCAN_DATATYPES as ROS_LASERSCAN_DATATYPES, LaserScan as RosLaserScan } from "../../../mir/ros";
 import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
 import { Pose } from "../transforms";
 

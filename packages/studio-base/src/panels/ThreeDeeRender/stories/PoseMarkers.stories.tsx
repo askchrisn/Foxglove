@@ -17,7 +17,7 @@ import {
 } from "./common";
 import useDelayedFixture from "./useDelayedFixture";
 import ThreeDeePanel from "../index";
-import { PoseStamped, PoseWithCovarianceStamped, TransformStamped } from "../ros";
+import { PoseStamped, PoseWithCovarianceStamped, TransformStamped } from "../../../mir/ros";
 
 export default {
   title: "panels/ThreeDeeRender",
