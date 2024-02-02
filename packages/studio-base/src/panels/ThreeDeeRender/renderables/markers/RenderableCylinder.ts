@@ -9,7 +9,7 @@ import { makeStandardMaterial } from "./materials";
 import type { IRenderer } from "../../IRenderer";
 import { rgbToThreeColor } from "../../color";
 import { cylinderSubdivisions, DetailLevel } from "../../lod";
-import { Marker } from "../../ros";
+import { Marker } from "../../../../mir/ros";
 
 export class RenderableCylinder extends RenderableMarker {
   #mesh: THREE.Mesh<THREE.CylinderGeometry, THREE.MeshStandardMaterial>;

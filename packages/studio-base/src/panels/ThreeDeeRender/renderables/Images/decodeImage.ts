@@ -22,7 +22,7 @@ import {
 import { RawImage } from "@foxglove/schemas";
 
 import { CompressedImageTypes } from "./ImageTypes";
-import { Image as RosImage } from "../../ros";
+import { Image as RosImage } from "../../../../mir/ros";
 import { ColorModeSettings, getColorConverter } from "../colorMode";
 
 export async function decodeCompressedImageToBitmap(

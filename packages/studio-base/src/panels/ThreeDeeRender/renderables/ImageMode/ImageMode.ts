@@ -71,7 +71,7 @@ import {
   COMPRESSED_IMAGE_DATATYPES as ROS_COMPRESSED_IMAGE_DATATYPES,
   CAMERA_INFO_DATATYPES,
   CameraInfo,
-} from "../../ros";
+} from "../../../../mir/ros";
 import { topicIsConvertibleToSchema } from "../../topicIsConvertibleToSchema";
 import { ICameraHandler } from "../ICameraHandler";
 import { getTopicMatchPrefix, sortPrefixMatchesToFront } from "../Images/topicPrefixMatching";

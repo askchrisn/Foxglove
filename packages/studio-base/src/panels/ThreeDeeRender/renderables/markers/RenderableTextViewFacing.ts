@@ -7,7 +7,7 @@ import { Label } from "@foxglove/three-text";
 import { RenderableMarker } from "./RenderableMarker";
 import type { Renderer } from "../../Renderer";
 import { getLuminance, SRGBToLinear } from "../../color";
-import { Marker } from "../../ros";
+import { Marker } from "../../../../mir/ros";
 
 export class RenderableTextViewFacing extends RenderableMarker {
   #label: Label;

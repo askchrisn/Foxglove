@@ -8,7 +8,7 @@ import { RenderableMarker } from "./RenderableMarker";
 import { makeStandardMaterial } from "./materials";
 import type { IRenderer } from "../../IRenderer";
 import { rgbToThreeColor } from "../../color";
-import { Marker } from "../../ros";
+import { Marker } from "../../../../mir/ros";
 
 export class RenderableCube extends RenderableMarker {
   #mesh: THREE.Mesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;

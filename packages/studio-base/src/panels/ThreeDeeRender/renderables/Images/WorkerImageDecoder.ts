@@ -8,7 +8,7 @@ import { ComlinkWrap } from "@foxglove/den/worker";
 import { RawImage } from "@foxglove/schemas";
 
 import type { RawImageOptions } from "./decodeImage";
-import { Image as RosImage } from "../../ros";
+import { Image as RosImage } from "../../../../mir/ros";
 
 /**
  * Provides a worker that can process RawImages on a background thread.

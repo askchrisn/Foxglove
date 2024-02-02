@@ -16,7 +16,7 @@ import { RenderableSphereList } from "./RenderableSphereList";
 import { RenderableTextViewFacing } from "./RenderableTextViewFacing";
 import { RenderableTriangleList } from "./RenderableTriangleList";
 import type { Renderer } from "../../Renderer";
-import { MarkerType, Marker } from "../../ros";
+import { MarkerType, Marker } from "../../../../mir/ros";
 
 const CONSTRUCTORS = {
   [MarkerType.ARROW]: RenderableArrow,

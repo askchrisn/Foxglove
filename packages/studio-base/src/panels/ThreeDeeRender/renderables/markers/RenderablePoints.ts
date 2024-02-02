@@ -8,7 +8,7 @@ import { RenderableMarker } from "./RenderableMarker";
 import { markerHasTransparency, makePointsMaterial } from "./materials";
 import { DynamicBufferGeometry } from "../../DynamicBufferGeometry";
 import type { IRenderer } from "../../IRenderer";
-import { Marker } from "../../ros";
+import { Marker } from "../../../../mir/ros";
 
 export class RenderablePoints extends RenderableMarker {
   #geometry: DynamicBufferGeometry;

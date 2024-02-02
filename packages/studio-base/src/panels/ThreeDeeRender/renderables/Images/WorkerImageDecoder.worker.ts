@@ -7,7 +7,7 @@ import * as Comlink from "comlink";
 import type { RawImage } from "@foxglove/schemas";
 
 import { decodeRawImage, RawImageOptions } from "./decodeImage";
-import type { Image as RosImage } from "../../ros";
+import type { Image as RosImage } from "../../../../mir/ros";
 
 function decode(image: RosImage | RawImage, options: Partial<RawImageOptions>): ImageData {
   const result = new ImageData(image.width, image.height);

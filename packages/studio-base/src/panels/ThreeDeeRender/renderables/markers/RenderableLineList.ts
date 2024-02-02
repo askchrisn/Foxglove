@@ -15,7 +15,7 @@ import {
 } from "./materials";
 import type { IRenderer } from "../../IRenderer";
 import { LineMaterialWithAlphaVertex } from "../../LineMaterialWithAlphaVertex";
-import { Marker } from "../../ros";
+import { Marker } from "../../../../mir/ros";
 
 export class RenderableLineList extends RenderableMarker {
   #geometry: LineSegmentsGeometry;

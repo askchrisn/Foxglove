@@ -51,7 +51,7 @@ import {
   WAITING_FOR_SYNC_EMPTY_HUD_ID,
 } from "./constants";
 import { PartialMessageEvent } from "../../SceneExtension";
-import { CompressedImage as RosCompressedImage, Image as RosImage, CameraInfo } from "../../ros";
+import { CompressedImage as RosCompressedImage, Image as RosImage, CameraInfo } from "../../../../mir/ros";
 import { t3D } from "../../t3D";
 
 type NormalizedAnnotations = {

@@ -9,7 +9,7 @@ import { makeStandardMaterial } from "./materials";
 import type { IRenderer } from "../../IRenderer";
 import { rgbToThreeColor } from "../../color";
 import { DetailLevel, sphereSubdivisions } from "../../lod";
-import { Marker } from "../../ros";
+import { Marker } from "../../../../mir/ros";
 
 export class RenderableSphere extends RenderableMarker {
   public mesh: THREE.Mesh<THREE.SphereGeometry, THREE.MeshStandardMaterial>;

@@ -9,7 +9,7 @@ import { RenderableMarker } from "./RenderableMarker";
 import { markerHasTransparency, makeStandardInstancedMaterial } from "./materials";
 import { DynamicInstancedMesh } from "../../DynamicInstancedMesh";
 import type { Renderer } from "../../Renderer";
-import { Marker } from "../../ros";
+import { Marker } from "../../../../mir/ros";
 
 export class RenderableCubeList extends RenderableMarker {
   #mesh: DynamicInstancedMesh<THREE.BoxGeometry, THREE.MeshStandardMaterial>;

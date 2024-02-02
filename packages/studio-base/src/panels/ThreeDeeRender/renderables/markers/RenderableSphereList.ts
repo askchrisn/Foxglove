@@ -9,7 +9,7 @@ import { createGeometry as createSphereGeometry } from "./RenderableSphere";
 import { markerHasTransparency, makeStandardInstancedMaterial } from "./materials";
 import { DynamicInstancedMesh } from "../../DynamicInstancedMesh";
 import type { Renderer } from "../../Renderer";
-import { Marker } from "../../ros";
+import { Marker } from "../../../../mir/ros";
 
 export class RenderableSphereList extends RenderableMarker {
   #mesh: DynamicInstancedMesh<THREE.SphereGeometry, THREE.MeshStandardMaterial>;

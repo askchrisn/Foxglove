@@ -27,7 +27,7 @@ import PanelSetup, { Fixture } from "@foxglove/studio-base/stories/PanelSetup";
 import delay from "@foxglove/studio-base/util/delay";
 
 import { ImagePanel } from "../../index";
-import { CameraInfo, CompressedImage as RosCompressedImage, Image as RosRawImage } from "../../ros";
+import { CameraInfo, CompressedImage as RosCompressedImage, Image as RosRawImage } from "../../../../mir/ros";
 import { PNG_TEST_IMAGE, rad2deg, SENSOR_FRAME_ID } from "../common";
 
 export default {

@@ -10,7 +10,7 @@ import { RosValue } from "@foxglove/studio-base/players/types";
 import type { IRenderer } from "../../IRenderer";
 import { BaseUserData, Renderable } from "../../Renderable";
 import { makeRgba, rgbToThreeColor, stringToRgba } from "../../color";
-import { Marker } from "../../ros";
+import { Marker } from "../../../../mir/ros";
 import type { LayerSettingsMarker } from "../TopicMarkers";
 
 const tempColor = new THREE.Color();

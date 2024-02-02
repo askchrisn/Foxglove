@@ -6,7 +6,7 @@ import { CompressedImage, RawImage } from "@foxglove/schemas";
 import { PartialMessage } from "@foxglove/studio-base/panels/ThreeDeeRender/SceneExtension";
 
 import { normalizeByteArray, normalizeHeader, normalizeTime } from "../../normalizeMessages";
-import { Image as RosImage, CompressedImage as RosCompressedImage } from "../../ros";
+import { Image as RosImage, CompressedImage as RosCompressedImage } from "../../../../mir/ros";
 
 function normalizeImageData(data: Int8Array): Int8Array;
 function normalizeImageData(data: PartialMessage<Uint8Array> | undefined): Uint8Array;

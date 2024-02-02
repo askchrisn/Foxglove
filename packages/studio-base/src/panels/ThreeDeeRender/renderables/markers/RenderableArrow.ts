@@ -11,7 +11,7 @@ import type { IRenderer } from "../../IRenderer";
 import { rgbToThreeColor } from "../../color";
 import { arrowHeadSubdivisions, arrowShaftSubdivisions, DetailLevel } from "../../lod";
 import { getRotationTo } from "../../math";
-import { Marker } from "../../ros";
+import { Marker } from "../../../../mir/ros";
 
 const SHAFT_LENGTH = 0.77;
 const SHAFT_DIAMETER = 1.0;

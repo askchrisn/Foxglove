@@ -18,7 +18,7 @@ import { RosValue } from "@foxglove/studio-base/players/types";
 
 import { AnyImage } from "./ImageTypes";
 import { decodeCompressedImageToBitmap } from "./decodeImage";
-import { CameraInfo } from "../../ros";
+import { CameraInfo } from "../../../../mir/ros";
 import { DECODE_IMAGE_ERR_KEY, IMAGE_TOPIC_PATH } from "../ImageMode/constants";
 import { ColorModeSettings } from "../colorMode";
 

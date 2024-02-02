@@ -5,7 +5,7 @@
 import * as THREE from "three";
 
 import { LineMaterialWithAlphaVertex } from "../../LineMaterialWithAlphaVertex";
-import { ColorRGBA, Marker, MarkerType } from "../../ros";
+import { ColorRGBA, Marker, MarkerType } from "../../../../mir/ros";
 
 export type LineOptions = {
   resolution: THREE.Vector2;

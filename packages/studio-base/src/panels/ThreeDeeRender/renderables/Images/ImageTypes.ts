@@ -9,7 +9,7 @@ import {
   Image as RosImage,
   CompressedImage as RosCompressedImage,
   CAMERA_INFO_DATATYPES,
-} from "../../ros";
+} from "../../../../mir/ros";
 
 export const ALL_CAMERA_INFO_SCHEMAS = new Set([
   ...CAMERA_INFO_DATATYPES,

@@ -9,7 +9,7 @@ import { markerHasTransparency, makeStandardVertexColorMaterial } from "./materi
 import { DynamicBufferGeometry } from "../../DynamicBufferGeometry";
 import type { Renderer } from "../../Renderer";
 import { rgbaToLinear } from "../../color";
-import { Marker, Vector3 } from "../../ros";
+import { Marker, Vector3 } from "../../../../mir/ros";
 
 const NOT_DIVISIBLE_ERR = "NOT_DIVISIBLE";
 const EMPTY_ERR = "EMPTY";

@@ -11,7 +11,7 @@ import { makeStandardMaterial } from "./materials";
 import type { IRenderer } from "../../IRenderer";
 import { rgbToThreeColor } from "../../color";
 import { disposeMeshesRecursive } from "../../dispose";
-import { Marker } from "../../ros";
+import { Marker } from "../../../../mir/ros";
 import { removeLights, replaceMaterials } from "../models";
 
 const MESH_FETCH_FAILED = "MESH_FETCH_FAILED";

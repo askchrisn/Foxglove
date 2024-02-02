@@ -4,7 +4,7 @@
 
 import { NumericType, PackedElementField } from "@foxglove/schemas";
 
-import { PointField, PointFieldType } from "../../ros";
+import { PointField, PointFieldType } from "../../../../mir/ros";
 
 export type FieldReader = (view: DataView, pointOffset: number) => number;
 
