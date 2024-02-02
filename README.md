@@ -5,6 +5,16 @@
 
 Currently main is based on Foxglove release/v1.86.1
 
+## Todo
+Move the following files over from the original MiR Project
+
+```ORIGINAL FILE``` -> ```NEW FILE NAME(S)```
+- Markers.ts -> RenderableMarker.ts
+- OccupancyGrids.ts -> OccupancyGrids.ts
+- PointCloudsAndLaserScans.ts -> PointClouds.ts & LaserScans.ts
+- PoseArrays.ts -> PoseArrays.ts
+- ros.ts - DONE
+
 ## Branches
 - ```main``` - mir branch with latest foxglove release
 - ```foxglove-main``` - branch in sync with Foxglove:main

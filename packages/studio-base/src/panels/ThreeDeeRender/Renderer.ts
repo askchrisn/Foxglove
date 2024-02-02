@@ -81,7 +81,7 @@ import {
   TRANSFORM_STAMPED_DATATYPES,
   TransformStamped,
   Vector3,
-} from "./ros";
+} from "../../mir/ros";
 import { SelectEntry } from "./settings";
 import {
   AddTransformResult,

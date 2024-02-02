@@ -6,7 +6,7 @@ import * as THREE from "three";
 import tinycolor from "tinycolor2";
 
 import { lerp } from "./math";
-import { ColorRGB, ColorRGBA } from "./ros";
+import { ColorRGB, ColorRGBA } from "../../mir/ros";
 
 export const LIGHT_OUTLINE = new THREE.Color(0x000000).convertSRGBToLinear();
 export const DARK_OUTLINE = new THREE.Color(0xffffff).convertSRGBToLinear();

@@ -16,7 +16,7 @@ import {
   Transform,
   TransformStamped,
   Vector3,
-} from "./ros";
+} from "../../mir/ros";
 import type { Pose } from "./transforms";
 
 // Legacy foxglove.Transform type -- see https://github.com/foxglove/schemas/pull/46

@@ -38,7 +38,7 @@ import { MeasurementTool } from "./renderables/MeasurementTool";
 import { PublishClickTool, PublishClickType } from "./renderables/PublishClickTool";
 import { ColorModeSettings } from "./renderables/colorMode";
 import { MarkerPool } from "./renderables/markers/MarkerPool";
-import { Quaternion, Vector3 } from "./ros";
+import { Quaternion, Vector3 } from "../../mir/ros";
 import { BaseSettings, CustomLayerSettings, SelectEntry } from "./settings";
 import { TransformTree } from "./transforms";
 import { InterfaceMode } from "./types";

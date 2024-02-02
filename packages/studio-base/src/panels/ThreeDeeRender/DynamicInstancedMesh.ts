@@ -4,7 +4,7 @@
 
 import * as THREE from "three";
 
-import { ColorRGBA, Vector3 } from "./ros";
+import { ColorRGBA, Vector3 } from "../../mir/ros";
 
 const INITIAL_CAPACITY = 4;
 
