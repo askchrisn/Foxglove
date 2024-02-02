@@ -1,6 +1,9 @@
 # MiR Development
 
-```Currently main is based on Foxglove release/v1.86.1```
+## Important Notes
+```ALL FILES MIR REPLACED ARE IN ..\packages\studio-base\src\mir\```
+
+Currently main is based on Foxglove release/v1.86.1
 
 ## Branches
 - ```main``` - mir branch with latest foxglove release
