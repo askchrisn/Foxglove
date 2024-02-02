@@ -35,9 +35,11 @@ Move the following files over from the original MiR Project
 ## Running the Project Locally
 ```sh
 # To launch the app:
+yarn install
 yarn web:serve
 
 # To launch the storybook:
+yarn install
 yarn storybook
 ```
 2. Visit ```localhost:8080``` to see the locally run Foxglove dashboard
@@ -64,7 +66,7 @@ yarn test         # run all tests
 yarn test:watch   # run tests on changed files
 ```
 ## For more info
-- View the buried documentation [here](https://github.com/foxglove/studio/edit/main/CONTRIBUTING.md)
+- View the buried original documentation about contributing [here](https://github.com/foxglove/studio/edit/main/CONTRIBUTING.md)
 
 <br/>
 <br/>
