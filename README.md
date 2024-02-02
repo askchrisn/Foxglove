@@ -14,7 +14,7 @@
 ## Getting Started
 
 1. Clone the repo
-2. Run ```fit lfs pull``` to ensure Git LFS objects are up to date
+2. Run ```git lfs pull``` to ensure Git LFS objects are up to date
 2. Run ```corepack enable``` and ```yarn install``` (should take 5 minutes to finish)
 4. To run the project, refer to below
 
