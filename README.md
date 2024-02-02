@@ -1,3 +1,65 @@
+# MiR Development
+
+```Currently main is based on Foxglove release/v1.86.1```
+
+## Branches
+- ```main``` - mir branch with latest foxglove release
+- ```foxglove-main``` - branch in sync with Foxglove:main
+- ```foxglove/release/***``` - release from Foxglove
+
+## Dependencies
+- Node.js v16.10+
+- Git LFS
+
+## Getting Started
+
+1. Clone the repo
+2. Run ```fit lfs pull``` to ensure Git LFS objects are up to date
+2. Run ```corepack enable``` and ```yarn install``` (should take 5 minutes to finish)
+4. To run the project, refer to below
+
+## Running the Project Locally
+```sh
+# To launch the app:
+yarn web:serve
+
+# To launch the storybook:
+yarn storybook
+```
+2. Visit ```localhost:8080``` to see the locally run Foxglove dashboard
+
+## Using/Testing Foxglove
+- Foxglove display an abundence of information based on an imported file, these files are ```.bag``` files.
+
+#### Download a ```.bag``` file
+- We have these files located in the Azure Cloud under the processed folder, labaled as ```foxglove_filtered.bag```
+- Or, we have a few demo files here under the [testBags](https://github.com/askchrisn/Foxglove/tree/main/exampleBagFiles) folder
+
+#### Importing a ```.bag``` file
+1. Download a .bag file from one of the sources above
+1. In your locally hosted foxglove dashboard, click on the foxglove icon on the top left
+2. Go to ```File > Open```
+3. Select the file you downloaded in step 1
+
+## Other useful commands
+
+```sh
+yarn run          # list available commands
+yarn lint         # lint all files
+yarn test         # run all tests
+yarn test:watch   # run tests on changed files
+```
+## For more info
+- View the buried documentation [here](https://github.com/foxglove/studio/edit/main/CONTRIBUTING.md)
+
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+
+<hr />
+
 [![Accelerate your robotics development](https://user-images.githubusercontent.com/14011012/195918769-5aaeedf3-5de2-48fb-951e-7399f2b9e190.png)](https://foxglove.dev)
 
 <br/>
