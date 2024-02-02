@@ -6,7 +6,7 @@ import * as THREE from "three";
 
 import type { IRenderer } from "../IRenderer";
 import { arrowHeadSubdivisions, arrowShaftSubdivisions, DetailLevel } from "../lod";
-import { ColorRGBA } from "../ros";
+import { ColorRGBA } from "../../../mir/ros";
 
 const SHAFT_LENGTH = 0.154;
 const SHAFT_DIAMETER = 0.02;
