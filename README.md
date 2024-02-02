@@ -6,7 +6,7 @@
 Currently main is based on Foxglove release/v1.86.1
 
 ## Todo
-Move the following files over from the original MiR Project
+Move the following files over from the original [MiR Project](https://git.mirdev.net/mir/mir_webviz)
 
 ```ORIGINAL FILE``` -> ```NEW FILE NAME(S)```
 - Markers.ts -> RenderableMarker.ts
