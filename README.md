@@ -16,6 +16,8 @@ Move the following files over from the original MiR Project
 - DONE defaultLayout.ts -> defaultLayout.ts
 - DONE ros.ts -> ros.ts
 
+- To find all changes made to the original Foxglove - [click here](https://git.mirdev.net/mir/mir_webviz/compare/f4df0c61a991c1748ee6310dc1ddd1b9dbea5166...a1b7b0dfed69a6608efd9c14725f594e49f304b5#diff-7dfff5ca17f0e222d78425aed7571117240cdc82)
+
 ## Branches
 - ```main``` - mir branch with latest foxglove release
 - ```foxglove-main``` - branch in sync with Foxglove:main
