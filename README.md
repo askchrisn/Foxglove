@@ -12,7 +12,7 @@ Move the following files over from the original [MiR Project](https://git.mirdev
 - Markers.ts -> RenderableMarker.ts
 - OccupancyGrids.ts -> OccupancyGrids.ts
 - PointCloudsAndLaserScans.ts -> PointClouds.ts & LaserScans.ts
-- PoseArrays.ts -> PoseArrays.ts
+- DONE PoseArrays.ts -> PoseArrays.ts
 - DONE defaultLayout.ts -> defaultLayout.ts
 - DONE ros.ts -> ros.ts
 
