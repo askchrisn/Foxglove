@@ -13,7 +13,7 @@ import { Markers } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables
 import { OccupancyGrids } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/OccupancyGrids";
 import { PointClouds } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/PointClouds";
 import { Polygons } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/Polygons";
-import { PoseArrays } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/PoseArrays";
+import { PoseArrays } from "../../mir/PoseArrays";
 import { Poses } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/Poses";
 import { PublishSettings } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/PublishSettings";
 import { FoxgloveSceneEntities } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/SceneEntities";
