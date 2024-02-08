@@ -6,7 +6,7 @@ import { StoryObj } from "@storybook/react";
 import { screen, userEvent, waitFor } from "@storybook/testing-library";
 
 import { MessageEvent } from "@foxglove/studio";
-import { LayerSettingsOccupancyGrid } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/OccupancyGrids";
+import { LayerSettingsOccupancyGrid } from "@foxglove/studio-base/mir/OccupancyGrids";
 import { Topic } from "@foxglove/studio-base/players/types";
 import PanelSetup from "@foxglove/studio-base/stories/PanelSetup";
 

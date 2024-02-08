@@ -10,7 +10,7 @@ import { MessageEvent, SettingsTreeAction } from "@foxglove/studio";
 import {
   createStixelMaterial,
   PointCloudHistoryRenderable,
-} from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/PointClouds";
+} from "../../../mir/PointClouds"
 import type { RosObject } from "@foxglove/studio-base/players/types";
 import { VelodyneScan } from "@foxglove/studio-base/types/Messages";
 import {
