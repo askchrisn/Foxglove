@@ -128,6 +128,7 @@ function BaseStory({ includeSettings = false }: { includeSettings?: boolean }): 
               "/costmap": {
                 visible: true,
                 colorMode: "costmap",
+                frameLocked: false,
               } as LayerSettingsOccupancyGrid,
               "/custom": {
                 visible: true,
