@@ -84,7 +84,7 @@ type GridCellHistoryUserData = BaseUserData & {
   material: THREE.PointsMaterial;
   pickingMaterial: THREE.ShaderMaterial;
   instancePickingMaterial: THREE.ShaderMaterial;
-  GridCell?: GridCell;
+  gridCell?: GridCell;
 };
 
 const NEEDS_MIN_MAX = ["gradient", "colormap"];
@@ -100,7 +100,7 @@ const tempColor = { r: 0, g: 0, b: 0, a: 0 };
 const tempMinMaxColor: THREE.Vector2Tuple = [0, 0];
 
 type GridCellUserData = BaseUserData & {
-  GridCell?: GridCell;
+  gridCell?: GridCell;
   originalMessage: Record<string, RosValue> | undefined;
 };
 
@@ -137,7 +137,7 @@ export class GridCellHistoryRenderable extends Renderable<GridCellHistoryUserDat
         settingsPath: [], //unused
         settings: { visible: true }, //unused
         topic,
-        GridCell: userData.GridCell,
+        gridCell: userData.gridCell,
         originalMessage: userData.latestOriginalMessage,
       },
       geometry,
@@ -164,7 +164,7 @@ export class GridCellHistoryRenderable extends Renderable<GridCellHistoryUserDat
     this.userData.pickingMaterial.dispose();
     this.userData.instancePickingMaterial.dispose();
     this.#pointsHistory.dispose();
-    this.userData.GridCell = undefined;
+    this.userData.gridCell = undefined;
     super.dispose();
   }
 
@@ -179,7 +179,7 @@ export class GridCellHistoryRenderable extends Renderable<GridCellHistoryUserDat
     this.userData.receiveTime = receiveTime;
     this.userData.messageTime = messageTime;
     this.userData.frameId = this.renderer.normalizeFrameId(GridCell.header.frame_id);
-    this.userData.GridCell = GridCell;
+    this.userData.gridCell = GridCell;
     this.userData.latestOriginalMessage = originalMessage;
 
     const prevSettings = this.userData.settings;
@@ -238,68 +238,6 @@ export class GridCellHistoryRenderable extends Renderable<GridCellHistoryUserDat
   public startFrame(currentTime: bigint, renderFrameId: string, fixedFrameId: string): void {
     this.#pointsHistory.updateHistoryFromCurrentTime(currentTime);
     this.#pointsHistory.updatePoses(currentTime, renderFrameId, fixedFrameId);
-    if (this.userData.settings.stixelsEnabled) {
-      this.#stixelsHistory.updateHistoryFromCurrentTime(currentTime);
-      this.#stixelsHistory.updatePoses(currentTime, renderFrameId, fixedFrameId);
-    }
-  }
-
-  public pushHistory(
-    this: PointCloudHistoryRenderable,
-    pointCloud: PointCloud | PointCloud2,
-    originalMessage: RosObject | undefined,
-    settings: LayerSettingsPointClouds,
-    receiveTime: bigint,
-  ): void {
-    const messageTime = toNanoSec(getTimestamp(pointCloud));
-    const pointsHistory = this.#pointsHistory;
-    const stixelsHistory = this.#stixelsHistory;
-    const material = this.userData.material;
-    const stixelMaterial = this.userData.stixelMaterial;
-    const topic = this.userData.topic;
-
-    // Push a new (empty) entry to the history of points
-    const geometry = createGeometry(topic, THREE.StaticDrawUsage);
-    const points = new PointCloudRenderable(
-      topic,
-      {
-        receiveTime: -1n, // unused
-        messageTime: -1n, // unused
-        frameId: "", //unused
-        pose: getPose(pointCloud),
-        settingsPath: [], //unused
-        settings: { visible: true }, //unused
-        topic,
-        pointCloud,
-        originalMessage,
-      },
-      geometry,
-      material,
-      this.userData.pickingMaterial,
-      this.userData.instancePickingMaterial,
-    );
-    pointsHistory.addHistoryEntry({ receiveTime, messageTime, renderable: points });
-    this.add(points);
-
-    if (settings.stixelsEnabled) {
-      const stixelGeometry = createStixelGeometry(topic, THREE.StaticDrawUsage);
-      const stixels = new StixelsRenderable(
-        topic,
-        {
-          receiveTime: -1n, // unused
-          messageTime: -1n, // unused
-          frameId: "", //unused
-          pose: getPose(pointCloud),
-          settingsPath: [], //unused
-          settings: { visible: true }, //unused
-          topic,
-        },
-        stixelGeometry,
-        stixelMaterial,
-      );
-      stixelsHistory.addHistoryEntry({ receiveTime, messageTime, renderable: stixels });
-      this.add(stixels);
-    }
   }
 
   #updateGridCellBuffers(
@@ -401,7 +339,6 @@ export class GridCellHistoryRenderable extends Renderable<GridCellHistoryUserDat
 
 export class GridCells extends SceneExtension<GridCellHistoryRenderable> {
   public static extensionId = "foxglove.GridCells";
-  #fieldsByTopic = new Map<string, string[]>();
 
   public constructor(renderer: IRenderer, name: string = GridCells.extensionId) {
     super(name, renderer);
@@ -413,7 +350,7 @@ export class GridCells extends SceneExtension<GridCellHistoryRenderable> {
         type: "schema",
         schemaNames: GRID_CELLS_DATATYPES,
         subscription: {
-          handler: this.#handleRosPointCloud,
+          handler: this.#handleGridCells,
           filterQueue: this.#processMessageQueue.bind(this),
         },
       },
@@ -421,7 +358,7 @@ export class GridCells extends SceneExtension<GridCellHistoryRenderable> {
         type: "schema",
         schemaNames: MIR_COST_MAP_DATATYPE,
         subscription: {
-          handler: this.#handleFoxglovePointCloud,
+          handler: this.#handleMirLocalCostmap,
           filterQueue: this.#processMessageQueue.bind(this),
         },
       },
@@ -457,27 +394,28 @@ export class GridCells extends SceneExtension<GridCellHistoryRenderable> {
     const configTopics = this.renderer.config.topics;
     const handler = this.handleSettingsAction;
     const entries: SettingsTreeEntry[] = [];
-    for (const topic of this.renderer.topics ?? []) {
-      const isPointCloud = topicIsConvertibleToSchema(topic, ALL_POINTCLOUD_DATATYPES);
-      if (!isPointCloud) {
-        continue;
-      }
-      const config = (configTopics[topic.name] ?? {}) as Partial<LayerSettingsPointClouds>;
-      const messageFields = this.#fieldsByTopic.get(topic.name) ?? POINT_CLOUD_REQUIRED_FIELDS;
-      const node: SettingsTreeNodeWithActionHandler = pointSettingsNode(
-        topic,
-        messageFields,
-        config,
-      );
-      node.fields!.stixelsEnabled = {
-        label: "Stixel view",
-        input: "boolean",
-        value: config.stixelsEnabled ?? DEFAULT_SETTINGS.stixelsEnabled,
-      };
-      node.handler = handler;
-      node.icon = "Points";
-      entries.push({ path: ["topics", topic.name], node });
-    }
+    // TODO: I dont think we need this per the !isPointCloud check below
+    // for (const topic of this.renderer.topics ?? []) {
+    //   const isPointCloud = topicIsConvertibleToSchema(topic, ALL_POINTCLOUD_DATATYPES);
+    //   if (!isPointCloud) {
+    //     continue;
+    //   }
+    //   const config = (configTopics[topic.name] ?? {}) as Partial<LayerSettingsPointClouds>;
+    //   const messageFields = this.#fieldsByTopic.get(topic.name) ?? POINT_CLOUD_REQUIRED_FIELDS;
+    //   const node: SettingsTreeNodeWithActionHandler = pointSettingsNode(
+    //     topic,
+    //     messageFields,
+    //     config,
+    //   );
+    //   node.fields!.stixelsEnabled = {
+    //     label: "Stixel view",
+    //     input: "boolean",
+    //     value: config.stixelsEnabled ?? DEFAULT_SETTINGS.stixelsEnabled,
+    //   };
+    //   node.handler = handler;
+    //   node.icon = "Points";
+    //   entries.push({ path: ["topics", topic.name], node });
+    // }
     return entries;
   }
 
@@ -513,13 +451,14 @@ export class GridCells extends SceneExtension<GridCellHistoryRenderable> {
     // Update the renderable
     const topicName = path[1]!;
     const renderable = this.renderables.get(topicName);
-    if (renderable) {
+    if (renderable?.userData.gridCell) {
       const prevSettings = this.renderer.config.topics[topicName] as
         | Partial<LayerSettingsPointClouds>
         | undefined;
       const settings = { ...DEFAULT_SETTINGS, ...prevSettings };
-      renderable.updatePointCloud(
-        renderable.userData.latestPointCloud,
+
+      renderable.updateGridCell(
+        renderable.userData.gridCell,
         renderable.userData.latestOriginalMessage,
         settings,
         renderable.userData.receiveTime,
@@ -527,87 +466,31 @@ export class GridCells extends SceneExtension<GridCellHistoryRenderable> {
     }
   };
 
-  #handleFoxglovePointCloud = (messageEvent: PartialMessageEvent<PointCloud>): void => {
+  // TODO: WARNING: This method required serious changes. Originates from handlePointCloud with commit scattered in
+  #handleGridCells = (messageEvent: PartialMessageEvent<GridCell>): void => {
     const { topic, schemaName } = messageEvent;
-    const pointCloud = normalizePointCloud(messageEvent.message);
+    const gridCell = normalizeGridCell(messageEvent.message);
     const receiveTime = toNanoSec(messageEvent.receiveTime);
-    const messageTime = toNanoSec(pointCloud.timestamp);
-    const frameId = pointCloud.frame_id;
-
-    this.#handlePointCloud(
-      topic,
-      schemaName,
-      pointCloud,
-      receiveTime,
-      messageTime,
-      messageEvent.message as RosObject,
-      frameId,
-    );
-  };
-
-  #handleRosPointCloud = (messageEvent: PartialMessageEvent<PointCloud2>): void => {
-    const { topic, schemaName } = messageEvent;
-    const pointCloud = normalizePointCloud2(messageEvent.message);
-    const receiveTime = toNanoSec(messageEvent.receiveTime);
-    const messageTime = toNanoSec(pointCloud.header.stamp);
-    const frameId = pointCloud.header.frame_id;
-
-    this.#handlePointCloud(
-      topic,
-      schemaName,
-      pointCloud,
-      receiveTime,
-      messageTime,
-      messageEvent.message as RosObject,
-      frameId,
-    );
-  };
-
-  #handlePointCloud(
-    topic: string,
-    schemaName: string,
-    pointCloud: PointCloud | PointCloud2,
-    receiveTime: bigint,
-    messageTime: bigint,
-    originalMessage: RosObject,
-    frameId: string,
-  ): void {
-    // Update the mapping of topic to point cloud field names if necessary
-    let fields = this.#fieldsByTopic.get(topic);
-    // filter count to compare only supported fields
-    const numSupportedFields = pointCloud.fields.reduce((numSupported, field) => {
-      return numSupported + (isSupportedField(field) ? 1 : 0);
-    }, 0);
-    let fieldsForTopicUpdated = false;
-    if (!fields || fields.length !== numSupportedFields) {
-      // Omit fields with count != 1 (only applies to ros pointclouds)
-      // can't use filterMap here because of incompatible types
-      fields = pointCloud.fields.filter(isSupportedField).map((field) => field.name);
-      this.#fieldsByTopic.set(topic, fields);
-      fieldsForTopicUpdated = true;
-      this.updateSettingsTree();
-    }
+    const messageTime = toNanoSec(gridCell.header.stamp);
+    const frameId = gridCell.header.frame_id
 
     let renderable = this.renderables.get(topic);
     if (!renderable) {
       // Set the initial settings from default values merged with any user settings
-      const userSettings = this.renderer.config.topics[topic] as
-        | Partial<LayerSettingsPointClouds>
-        | undefined;
+      const userSettings = this.renderer.config.topics[topic] as | Partial<LayerSettingsPointClouds> | undefined;
       const settings = { ...DEFAULT_SETTINGS, ...userSettings };
 
       // want to avoid setting this if fields didn't update
-      if (settings.colorField == undefined && fieldsForTopicUpdated) {
-        autoSelectColorSettings(settings, fields, {
-          supportsPackedRgbModes: ROS_POINTCLOUD_DATATYPES.has(schemaName),
-          supportsRgbaFieldsMode: FOXGLOVE_POINTCLOUD_DATATYPES.has(schemaName),
-        });
+      if (settings.colorField == undefined) {
+        settings.colorMode = "rgb";
+        // TODO: No clue what this does or what it is supposed to be
+        // settings.rgbByteOrder = "abgr";
 
         // Update user settings with the newly selected color field
         this.renderer.updateConfig((draft) => {
           const updatedUserSettings = { ...userSettings };
           updatedUserSettings.colorField = settings.colorField;
-          updatedUserSettings.colorMode = settings.colorMode;
+          updatedUserSettings.colorMode = "flat";
           updatedUserSettings.colorMap = settings.colorMap;
           draft.topics[topic] = updatedUserSettings;
         });
@@ -617,34 +500,43 @@ export class GridCells extends SceneExtension<GridCellHistoryRenderable> {
       const material = pointCloudMaterial(settings);
       const pickingMaterial = createPickingMaterial(settings);
       const instancePickingMaterial = createInstancePickingMaterial(settings);
-      const stixelMaterial = createStixelMaterial(settings);
+      const latestOriginalMessage = messageEvent.message as RosObject;
 
-      renderable = new PointCloudHistoryRenderable(topic, this.renderer, {
+      renderable = new GridCellHistoryRenderable(topic, this.renderer, {
         receiveTime,
         messageTime,
-        frameId: this.renderer.normalizeFrameId(frameId),
+        frameId: frameId,
         pose: makePose(),
         settingsPath: ["topics", topic],
         settings,
         topic,
-        latestPointCloud: pointCloud,
-        latestOriginalMessage: originalMessage,
+        gridCell: gridCell,
+        latestOriginalMessage: latestOriginalMessage,
         material,
         pickingMaterial,
         instancePickingMaterial,
-        stixelMaterial,
       });
 
       this.add(renderable);
       this.renderables.set(topic, renderable);
     }
 
-    const { settings } = renderable.userData;
+    renderable.updateGridCell(gridCell, messageEvent.message as RosObject, renderable.userData.settings, receiveTime);
+  };
+}
 
-    if (settings.decayTime > 0) {
-      renderable.pushHistory(pointCloud, originalMessage, settings, receiveTime);
-    }
-
-    renderable.updatePointCloud(pointCloud, originalMessage, settings, receiveTime);
+function normalizePoint(msg: PartialMessage<Point> | undefined): Point {
+  if (!msg) {
+    return { x: 0, y: 0, z: 0 };
   }
+  return { x: msg.x ?? 0, y: msg.y ?? 0, z: msg.z ?? 0 };
+}
+
+function normalizeGridCell(message: PartialMessage<GridCell>): GridCell {
+  return {
+    header: normalizeHeader(message.header),
+    cell_width: message.cell_width ?? 0,
+    cell_height: message.cell_height ?? 0,
+    cells: message.cells?.map((p) => normalizePoint(p)) ?? [],
+  };
 }
