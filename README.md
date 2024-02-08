@@ -17,6 +17,9 @@ Move the following files over from the original [MiR Project](https://git.mirdev
 - DONE ros.ts -> ros.ts
 
 - To find all changes made to the original Foxglove - [click here](https://git.mirdev.net/mir/mir_webviz/compare/f4df0c61a991c1748ee6310dc1ddd1b9dbea5166...a1b7b0dfed69a6608efd9c14725f594e49f304b5#diff-7dfff5ca17f0e222d78425aed7571117240cdc82)
+- To find the changes where foxglove seperated PointClouds and Laser Scans - [click here](https://github.com/foxglove/studio/pull/4981/files)
+- To find the changes where foxglove heavily changed PointClouds - [click here](https://github.com/foxglove/studio/commit/6b0e512c0817489aea9011564b3db8de2ff7e588#diff-d69526a40ce923c0ce624d5afbdc548f01e4a1b06ba7e4fcd8a9083f9c68903e)
+
 
 ## Branches
 - ```main``` - mir branch with latest foxglove release
