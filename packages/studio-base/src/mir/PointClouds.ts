@@ -329,7 +329,8 @@ export class PointCloudHistoryRenderable extends Renderable<PointCloudHistoryUse
     // const stixelColorAttribute = latestStixelEntry.renderable.geometry.attributes.color!;
     // // Iterate the point cloud data to update position and color attributes
 
-    this._updateGridCellsBuffers(gridCells, settings, positionAttribute, colorAttribute);
+    // TODO: FYI, updatePointCloud passes 2 stixel properties. We may need those as well
+    this.#updateGridCellsBuffers(gridCells, settings, positionAttribute, colorAttribute);
   }
 
   public updatePointCloud(
@@ -834,8 +835,8 @@ export class PointCloudHistoryRenderable extends Renderable<PointCloudHistoryUse
     settings: LayerSettingsPointClouds,
     positionAttribute: THREE.BufferAttribute,
     colorAttribute: THREE.BufferAttribute,
-    stixelPositionAttribute: THREE.BufferAttribute,
-    stixelColorAttribute: THREE.BufferAttribute,
+    // stixelPositionAttribute: THREE.BufferAttribute,
+    // stixelColorAttribute: THREE.BufferAttribute,
   ): void {
     // Update position attribute
     if (gridCells && gridCells.cells) {
@@ -845,7 +846,7 @@ export class PointCloudHistoryRenderable extends Renderable<PointCloudHistoryUse
     }
 
     // Update color attribute
-    // TODO: below is a copy paste from updatePointCloudBuffers, need to change it to gridCells
+    // TODO: below is a copy paste from updatePointCloudBuffers, need to change it to gridCells, we are ignoring stixels in our approach
     // if (settings.colorMode === "rgba-fields") {
     //   for (let i = 0; i < pointCount; i++) {
     //     const pointOffset = i * pointStep;
@@ -917,7 +918,7 @@ export class PointCloudHistoryRenderable extends Renderable<PointCloudHistoryUse
     positionAttribute.needsUpdate = true;
     colorAttribute.needsUpdate = true;
 
-    // TODO: Below was originally in updatePointCloudBuffers, not sure we need it for gridCells
+    // TODO: Below was originally in updatePointCloudBuffers, not sure we need it for gridCells; needed for stixels
     // stixelPositionAttribute.needsUpdate = true;
     // stixelColorAttribute.needsUpdate = true;
   }
@@ -947,6 +948,14 @@ export class PointClouds extends SceneExtension<PointCloudHistoryRenderable> {
         schemaNames: FOXGLOVE_POINTCLOUD_DATATYPES,
         subscription: {
           handler: this.#handleFoxglovePointCloud,
+          filterQueue: this.#processMessageQueue.bind(this),
+        },
+      },
+      {
+        type: "schema",
+        schemaNames: MIR_OBSTACLE_CLOUD,
+        subscription: {
+          handler: this.#handleMirPointCloud,
           filterQueue: this.#processMessageQueue.bind(this),
         },
       },
@@ -1172,6 +1181,29 @@ export class PointClouds extends SceneExtension<PointCloudHistoryRenderable> {
 
     renderable.updatePointCloud(pointCloud, originalMessage, settings, receiveTime);
   }
+
+  #handleMirPointCloud = (messageEvent: PartialMessageEvent<MirObstacleCloud>): void => {
+    const new_msg = MirToRos(messageEvent);
+    this.#handleRosPointCloud(new_msg);
+  };
+
+  #handleGridCells = (messageEvent: PartialMessageEvent<GridCells>): void => {
+    const { topic, schemaName } = messageEvent;
+    const gridCells = normalizeGridCells(messageEvent.message);
+    const receiveTime = toNanoSec(messageEvent.receiveTime);
+    const messageTime = toNanoSec(gridCells.header.stamp);
+    const frameId = gridCells.header.frame_id
+
+    this.#handlePointCloud(
+      topic,
+      schemaName,
+      pointCloud,
+      receiveTime,
+      messageTime,
+      messageEvent.message as RosObject,
+      frameId,
+    );
+  };
 }
 
 function pointFieldTypeName(type: PointFieldType): string {
@@ -1266,6 +1298,35 @@ function getStride(pointCloud: PointCloud | PointCloud2): number {
 function getPose(pointCloud: PointCloud | PointCloud2): Pose {
   const maybeFoxglove = pointCloud as Partial<PointCloud>;
   return maybeFoxglove.pose ?? makePose();
+}
+
+function normalizeGridCells(message: PartialMessage<GridCells>): GridCells {
+  return {
+    header: normalizeHeader(message.header),
+    cell_width: message.cell_width ?? 0,
+    cell_height: message.cell_height ?? 0,
+    cells: message.cells?.map((p) => normalizePoint(p)) ?? [],
+  };
+}
+
+function normalizePoint(msg: PartialMessage<Point> | undefined): Point {
+  if (!msg) {
+    return { x: 0, y: 0, z: 0 };
+  }
+  return { x: msg.x ?? 0, y: msg.y ?? 0, z: msg.z ?? 0 };
+}
+
+function MirToRos(
+  messageEvent: PartialMessageEvent<MirObstacleCloud>,
+): PartialMessageEvent<PointCloud2> {
+  return {
+    topic: messageEvent.topic,
+    schemaName: messageEvent.schemaName,
+    receiveTime: messageEvent.receiveTime,
+    publishTime: messageEvent.publishTime,
+    message: messageEvent.message.cloud!,
+    sizeInBytes: messageEvent.sizeInBytes,
+  };
 }
 
 export function createStixelMaterial(settings: LayerSettingsPointClouds): THREE.LineBasicMaterial {
