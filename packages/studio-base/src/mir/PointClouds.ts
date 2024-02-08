@@ -55,7 +55,7 @@ import {
   Point,
 } from "./ros";
 import { topicIsConvertibleToSchema } from "../panels/ThreeDeeRender/topicIsConvertibleToSchema";
-import { makePose } from "../panels/ThreeDeeRender/transforms";
+import { makePose, Pose } from "../panels/ThreeDeeRender/transforms";
 import { defined } from 'chart.js/helpers';
 
 
