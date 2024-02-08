@@ -523,6 +523,63 @@ export class GridCells extends SceneExtension<GridCellHistoryRenderable> {
 
     renderable.updateGridCell(gridCell, messageEvent.message as RosObject, renderable.userData.settings, receiveTime);
   };
+
+  #handleMirLocalCostmap = (messageEvent: PartialMessageEvent<GridCell>): void => {
+    const { topic, schemaName } = messageEvent;
+    const costmap_data = normalizeCostmapData(messageEvent.message);
+    const receiveTime = toNanoSec(messageEvent.receiveTime);
+    const messageTime = toNanoSec(costmap_data.header.stamp);
+    const frameId = costmap_data.header.frame_id
+
+    let renderable = this.renderables.get(topic);
+    if (!renderable) {
+      // Set the initial settings from default values merged with any user settings
+      const userSettings = this.renderer.config.topics[topic] as | Partial<LayerSettingsPointClouds> | undefined;
+      const settings = { ...DEFAULT_SETTINGS, ...userSettings };
+
+      // want to avoid setting this if fields didn't update
+      if (settings.colorField == undefined) {
+        settings.colorMode = "rgb";
+        // TODO: No clue what this does or what it is supposed to be
+        // settings.rgbByteOrder = "abgr";
+
+        // Update user settings with the newly selected color field
+        this.renderer.updateConfig((draft) => {
+          const updatedUserSettings = { ...userSettings };
+          updatedUserSettings.colorField = settings.colorField;
+          updatedUserSettings.colorMode = "flat";
+          updatedUserSettings.colorMap = settings.colorMap;
+          draft.topics[topic] = updatedUserSettings;
+        });
+        this.updateSettingsTree();
+      }
+
+      const material = pointCloudMaterial(settings);
+      const pickingMaterial = createPickingMaterial(settings);
+      const instancePickingMaterial = createInstancePickingMaterial(settings);
+      const latestOriginalMessage = messageEvent.message as RosObject;
+
+      renderable = new GridCellHistoryRenderable(topic, this.renderer, {
+        receiveTime,
+        messageTime,
+        frameId: frameId,
+        pose: makePose(),
+        settingsPath: ["topics", topic],
+        settings,
+        topic,
+        gridCell: costmap_data,
+        latestOriginalMessage: latestOriginalMessage,
+        material,
+        pickingMaterial,
+        instancePickingMaterial,
+      });
+
+      this.add(renderable);
+      this.renderables.set(topic, renderable);
+    }
+
+    renderable.updateGridCell(costmap_data, messageEvent.message as RosObject, renderable.userData.settings, receiveTime);
+  };
 }
 
 function normalizePoint(msg: PartialMessage<Point> | undefined): Point {
@@ -539,4 +596,42 @@ function normalizeGridCell(message: PartialMessage<GridCell>): GridCell {
     cell_height: message.cell_height ?? 0,
     cells: message.cells?.map((p) => normalizePoint(p)) ?? [],
   };
+}
+
+function normalizeCostmapData(message: PartialMessage<CostmapData>): GridCell {
+  const resolution = message.resolution!;
+  const width = message.width!;
+  const height = message.height!;
+  const offset_x = message.offset_x!;
+  const offset_y = message.offset_y!;
+  const grid_cells: GridCell = {
+    header: normalizeHeader(message.header),
+    cell_height: 0.05,
+    cell_width: 0.05,
+    cells: [],
+  };
+
+  for (let y = 0; y < width; y++) {
+    const cur_width = width * y;
+    for (let x = cur_width; x < height + cur_width; x++) {
+      const index = x >>> 2;
+      const offset = 6 - (x % 4 << 1);
+      const value = message.data![index];
+      let value_out = 0;
+      if (value == undefined) {
+        value_out = (0 >> offset) & 3;
+      } else {
+        value_out = (value >> offset) & 3;
+      }
+      if ((value_out & 0xff) === 2) {
+        grid_cells.cells.push({
+          x: (x - cur_width) * resolution + offset_x,
+          y: y * resolution + offset_y,
+          z: 0,
+        });
+      }
+    }
+  }
+  console.log(grid_cells);
+  return grid_cells;
 }
