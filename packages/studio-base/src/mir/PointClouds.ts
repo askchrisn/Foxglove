@@ -1,6 +1,7 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
+
 import * as _ from "lodash-es";
 import * as THREE from "three";
 import { Time, toNanoSec } from "@foxglove/rostime";
@@ -48,16 +49,15 @@ import {
   PointFieldType,
   MirObstacleCloud,
   MIR_OBSTACLE_CLOUD,
-  GridCells,
   GRID_CELLS_DATATYPES,
   CostmapData,
   MIR_COST_MAP_DATATYPE,
   Point,
 } from "./ros";
 import { topicIsConvertibleToSchema } from "../panels/ThreeDeeRender/topicIsConvertibleToSchema";
-import { makePose, Pose } from "../panels/ThreeDeeRender/transforms";
+import { makePose } from "../panels/ThreeDeeRender/transforms";
 import { defined } from 'chart.js/helpers';
-import { Vector3 } from "@foxglove/schemas/jsonschema";
+
 
 type PointCloudFieldReaders = {
   xReader: FieldReader;
@@ -75,7 +75,6 @@ type LayerSettingsPointClouds = LayerSettingsPointExtension & {
   colorFieldComputed: "distance" | undefined;
 };
 
-// TODO: change default point size to 2 and flat color to 0 1 0 1
 const DEFAULT_SETTINGS = {
   ...DEFAULT_POINT_SETTINGS,
   stixelsEnabled: false,
@@ -91,7 +90,6 @@ type PointCloudHistoryUserData = BaseUserData & {
   pickingMaterial: THREE.ShaderMaterial;
   instancePickingMaterial: THREE.ShaderMaterial;
   stixelMaterial: THREE.LineBasicMaterial;
-  gridCells?: GridCells;
 };
 
 const NEEDS_MIN_MAX = ["gradient", "colormap"];
@@ -99,9 +97,6 @@ const NEEDS_MIN_MAX = ["gradient", "colormap"];
 const ALL_POINTCLOUD_DATATYPES = new Set<string>([
   ...FOXGLOVE_POINTCLOUD_DATATYPES,
   ...ROS_POINTCLOUD_DATATYPES,
-  ...MIR_OBSTACLE_CLOUD,
-  ...GRID_CELLS_DATATYPES,
-  ...MIR_COST_MAP_DATATYPE,
 ]);
 
 const INVALID_POINTCLOUD = "INVALID_POINTCLOUD";
@@ -229,108 +224,9 @@ export class PointCloudHistoryRenderable extends Renderable<PointCloudHistoryUse
     this.userData.pickingMaterial.dispose();
     this.userData.instancePickingMaterial.dispose();
     this.userData.stixelMaterial.dispose();
-    this.userData.gridCells = undefined;
     this.#pointsHistory.dispose();
     this.#stixelsHistory.dispose();
     super.dispose();
-  }
-
-  // TODO: original made pointCloud = undefined, instead we will pass the previous pointCloud to the function
-  // This was copy pasted updatePointCloud method and then modified into updateGridCells
-  public updateGridCells(
-    this: PointCloudHistoryRenderable,
-    gridCells: GridCells,
-    pointCloud: PointCloud | PointCloud2,
-    originalMessage: RosObject | undefined,
-    settings: LayerSettingsPointClouds,
-    receiveTime: bigint,
-  ): void {
-    const messageTime = toNanoSec(gridCells.header.stamp);
-    this.userData.receiveTime = receiveTime;
-    this.userData.messageTime = messageTime;
-    this.userData.frameId = this.renderer.normalizeFrameId(gridCells.header.frame_id);
-    this.userData.gridCells = gridCells;
-    this.userData.latestPointCloud = pointCloud;
-    this.userData.latestOriginalMessage = originalMessage;
-
-    const prevSettings = this.userData.settings;
-    const prevIsDecay = prevSettings.decayTime > 0;
-    this.userData.settings = settings;
-
-    let material = this.userData.material;
-    let stixelMaterial = this.userData.stixelMaterial;
-    const needsRebuild =
-      colorHasTransparency(settings) !== material.transparent ||
-      pointCloudColorEncoding(settings) !== pointCloudColorEncoding(prevSettings) ||
-      settings.pointShape !== prevSettings.pointShape;
-
-    const pointsHistory = this.#pointsHistory;
-    const stixelsHistory = this.#stixelsHistory;
-    if (needsRebuild) {
-      material.dispose();
-      material = pointCloudMaterial(settings);
-      this.userData.material = material;
-      pointsHistory.forEach((entry) => {
-        entry.renderable.updateMaterial(material);
-      });
-
-      stixelMaterial.dispose();
-      stixelMaterial = createStixelMaterial(settings);
-      this.userData.stixelMaterial = stixelMaterial;
-      stixelsHistory.forEach((entry) => {
-        entry.renderable.updateMaterial(stixelMaterial);
-      });
-    } else {
-      material.size = settings.pointSize;
-    }
-
-    if (settings.colorField === colorFieldComputedPrefix + "distance") {
-      settings.colorFieldComputed = "distance";
-    }
-
-    const stixelsEnabledChanged = prevSettings.stixelsEnabled !== settings.stixelsEnabled;
-    // when stixels are switched off we can clear its history
-    if (!settings.stixelsEnabled && stixelsEnabledChanged) {
-      stixelsHistory.clearHistory();
-    }
-
-    const latestPointsEntry = pointsHistory.latest();
-    latestPointsEntry.receiveTime = receiveTime;
-    latestPointsEntry.messageTime = messageTime;
-    latestPointsEntry.renderable.userData.pose = getPose(pointCloud);
-    latestPointsEntry.renderable.userData.pointCloud = pointCloud;
-    latestPointsEntry.renderable.userData.originalMessage = originalMessage;
-
-    const pointCount = Math.trunc(gridCells.cells.length);
-    const latestPoints = latestPointsEntry.renderable;
-    latestPointsEntry.renderable.geometry.resize(pointCount);
-    const positionAttribute = latestPoints.geometry.attributes.position!;
-    const colorAttribute = latestPoints.geometry.attributes.color!;
-
-    const latestStixelEntry = stixelsHistory.latest();
-
-    const isDecay = settings.decayTime > 0;
-    if (!isDecay && prevIsDecay !== isDecay) {
-      latestPointsEntry.renderable.geometry.setUsage(THREE.DynamicDrawUsage);
-      latestStixelEntry.renderable.geometry.setUsage(THREE.DynamicDrawUsage);
-    }
-
-    latestStixelEntry.receiveTime = receiveTime;
-    latestStixelEntry.messageTime = messageTime;
-    latestStixelEntry.renderable.userData.pose = latestPointsEntry.renderable.userData.pose;
-    if (settings.stixelsEnabled) {
-      latestStixelEntry.renderable.geometry.resize(pointCount * 2);
-    } else {
-      latestStixelEntry.renderable.geometry.resize(0);
-    }
-
-    // TODO: This doesnt seem to be used; Keep for now
-    // const stixelPositionAttribute = latestStixelEntry.renderable.geometry.attributes.position!;
-    // const stixelColorAttribute = latestStixelEntry.renderable.geometry.attributes.color!;
-    // // Iterate the point cloud data to update position and color attributes
-
-    // TODO: FYI, updatePointCloud passes 2 stixel properties. We may need those as well
-    this.#updateGridCellsBuffers(gridCells, settings, positionAttribute, colorAttribute);
   }
 
   public updatePointCloud(
@@ -344,7 +240,6 @@ export class PointCloudHistoryRenderable extends Renderable<PointCloudHistoryUse
     this.userData.receiveTime = receiveTime;
     this.userData.messageTime = messageTime;
     this.userData.frameId = this.renderer.normalizeFrameId(getFrameId(pointCloud));
-    this.userData.gridCells = undefined;
     this.userData.latestPointCloud = pointCloud;
     this.userData.latestOriginalMessage = originalMessage;
 
@@ -826,103 +721,6 @@ export class PointCloudHistoryRenderable extends Renderable<PointCloudHistoryUse
     stixelPositionAttribute.needsUpdate = true;
     stixelColorAttribute.needsUpdate = true;
   }
-
-  #updateGridCellsBuffers(
-    // pointCloud: PointCloud | PointCloud2,
-    // readers: PointCloudFieldReaders,
-    // pointCount: number,
-    gridCells: GridCells,
-    settings: LayerSettingsPointClouds,
-    positionAttribute: THREE.BufferAttribute,
-    colorAttribute: THREE.BufferAttribute,
-    // stixelPositionAttribute: THREE.BufferAttribute,
-    // stixelColorAttribute: THREE.BufferAttribute,
-  ): void {
-    // Update position attribute
-    if (gridCells && gridCells.cells) {
-      for (let i = 0; i < gridCells.cells.length; i++) {
-          positionAttribute.setXYZ(i, gridCells?.cells[i]?.x ?? 0, gridCells?.cells[i]?.y ?? 0, gridCells?.cells[i]?.z ?? 0);
-      }
-    }
-
-    // Update color attribute
-    // TODO: below is a copy paste from updatePointCloudBuffers, need to change it to gridCells, we are ignoring stixels in our approach
-    // if (settings.colorMode === "rgba-fields") {
-    //   for (let i = 0; i < pointCount; i++) {
-    //     const pointOffset = i * pointStep;
-    //     const r = redReader(view, pointOffset);
-    //     const g = greenReader(view, pointOffset);
-    //     const b = blueReader(view, pointOffset);
-    //     const a = alphaReader(view, pointOffset);
-    //     colorAttribute.setXYZW(i, r, g, b, a);
-    //     if (settings.stixelsEnabled) {
-    //       stixelColorAttribute.setXYZW(i * 2, r, g, b, a);
-    //       stixelColorAttribute.setXYZW(i * 2 + 1, r, g, b, a);
-    //     }
-    //   }
-    // } else {
-    //   // Iterate the point cloud data to determine min/max color values (if needed)
-    //   this.#minMaxColorValues(
-    //     tempMinMaxColor,
-    //     packedColorReader,
-    //     view,
-    //     pointCount,
-    //     pointStep,
-    //     settings,
-    //   );
-    //   const [minColorValue, maxColorValue] = tempMinMaxColor;
-
-    //   // Build a method to convert raw color field values to RGBA
-    //   const colorConverter = getColorConverter(
-    //     settings as typeof settings & { colorMode: typeof settings.colorMode },
-    //     minColorValue,
-    //     maxColorValue,
-    //   );
-
-    //   for (let i = 0; i < pointCount; i++) {
-    //     const pointOffset = i * pointStep;
-    //     const colorValue = packedColorReader(view, pointOffset);
-    //     colorConverter(tempColor, colorValue);
-    //     colorAttribute.setXYZW(i, tempColor.r, tempColor.g, tempColor.b, tempColor.a);
-    //     if (settings.stixelsEnabled) {
-    //       stixelColorAttribute.setXYZW(i * 2, tempColor.r, tempColor.g, tempColor.b, tempColor.a);
-    //       stixelColorAttribute.setXYZW(
-    //         i * 2 + 1,
-    //         tempColor.r,
-    //         tempColor.g,
-    //         tempColor.b,
-    //         tempColor.a,
-    //       );
-    //     }
-    //   }
-    // }
-
-    const minColorValue = 0;
-    const maxColorValue = 0;
-
-    // const colorConverter = getColorConverter(settings, minColorValue, maxColorValue);
-
-    // Build a method to convert raw color field values to RGBA
-    const colorConverter = getColorConverter(settings as typeof settings & { colorMode: "rgba" }, minColorValue, maxColorValue);
-    for (let i = 0; i < gridCells.cells.length; i++) {
-      colorConverter(tempColor, 0);
-      colorAttribute.setXYZW(
-        i,
-        (tempColor.r * 255) | 0,
-        (tempColor.g * 255) | 0,
-        (tempColor.b * 255) | 0,
-        (tempColor.a * 255) | 0,
-      );
-    }
-
-    positionAttribute.needsUpdate = true;
-    colorAttribute.needsUpdate = true;
-
-    // TODO: Below was originally in updatePointCloudBuffers, not sure we need it for gridCells; needed for stixels
-    // stixelPositionAttribute.needsUpdate = true;
-    // stixelColorAttribute.needsUpdate = true;
-  }
-
 }
 
 export class PointClouds extends SceneExtension<PointCloudHistoryRenderable> {
@@ -948,14 +746,6 @@ export class PointClouds extends SceneExtension<PointCloudHistoryRenderable> {
         schemaNames: FOXGLOVE_POINTCLOUD_DATATYPES,
         subscription: {
           handler: this.#handleFoxglovePointCloud,
-          filterQueue: this.#processMessageQueue.bind(this),
-        },
-      },
-      {
-        type: "schema",
-        schemaNames: MIR_OBSTACLE_CLOUD,
-        subscription: {
-          handler: this.#handleMirPointCloud,
           filterQueue: this.#processMessageQueue.bind(this),
         },
       },
@@ -1181,29 +971,6 @@ export class PointClouds extends SceneExtension<PointCloudHistoryRenderable> {
 
     renderable.updatePointCloud(pointCloud, originalMessage, settings, receiveTime);
   }
-
-  #handleMirPointCloud = (messageEvent: PartialMessageEvent<MirObstacleCloud>): void => {
-    const new_msg = MirToRos(messageEvent);
-    this.#handleRosPointCloud(new_msg);
-  };
-
-  #handleGridCells = (messageEvent: PartialMessageEvent<GridCells>): void => {
-    const { topic, schemaName } = messageEvent;
-    const gridCells = normalizeGridCells(messageEvent.message);
-    const receiveTime = toNanoSec(messageEvent.receiveTime);
-    const messageTime = toNanoSec(gridCells.header.stamp);
-    const frameId = gridCells.header.frame_id
-
-    this.#handlePointCloud(
-      topic,
-      schemaName,
-      pointCloud,
-      receiveTime,
-      messageTime,
-      messageEvent.message as RosObject,
-      frameId,
-    );
-  };
 }
 
 function pointFieldTypeName(type: PointFieldType): string {
@@ -1298,35 +1065,6 @@ function getStride(pointCloud: PointCloud | PointCloud2): number {
 function getPose(pointCloud: PointCloud | PointCloud2): Pose {
   const maybeFoxglove = pointCloud as Partial<PointCloud>;
   return maybeFoxglove.pose ?? makePose();
-}
-
-function normalizeGridCells(message: PartialMessage<GridCells>): GridCells {
-  return {
-    header: normalizeHeader(message.header),
-    cell_width: message.cell_width ?? 0,
-    cell_height: message.cell_height ?? 0,
-    cells: message.cells?.map((p) => normalizePoint(p)) ?? [],
-  };
-}
-
-function normalizePoint(msg: PartialMessage<Point> | undefined): Point {
-  if (!msg) {
-    return { x: 0, y: 0, z: 0 };
-  }
-  return { x: msg.x ?? 0, y: msg.y ?? 0, z: msg.z ?? 0 };
-}
-
-function MirToRos(
-  messageEvent: PartialMessageEvent<MirObstacleCloud>,
-): PartialMessageEvent<PointCloud2> {
-  return {
-    topic: messageEvent.topic,
-    schemaName: messageEvent.schemaName,
-    receiveTime: messageEvent.receiveTime,
-    publishTime: messageEvent.publishTime,
-    message: messageEvent.message.cloud!,
-    sizeInBytes: messageEvent.sizeInBytes,
-  };
 }
 
 export function createStixelMaterial(settings: LayerSettingsPointClouds): THREE.LineBasicMaterial {
