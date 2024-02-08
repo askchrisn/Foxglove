@@ -101,7 +101,7 @@ export type MirTrajectoryPath = {
   index_for_first_cmd_vel: number;
 };
 
-export type GridCells = {
+export type GridCell = {
   header: Header;
   cell_width: number;
   cell_height: number;
