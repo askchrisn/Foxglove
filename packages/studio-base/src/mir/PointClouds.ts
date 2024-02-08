@@ -749,6 +749,14 @@ export class PointClouds extends SceneExtension<PointCloudHistoryRenderable> {
           filterQueue: this.#processMessageQueue.bind(this),
         },
       },
+      {
+        type: "schema",
+        schemaNames: MIR_OBSTACLE_CLOUD,
+        subscription: {
+          handler: this.#handleMirPointCloud,
+          filterQueue: this.#processMessageQueue.bind(this),
+        },
+      },
     ];
   }
 
@@ -867,6 +875,11 @@ export class PointClouds extends SceneExtension<PointCloudHistoryRenderable> {
       messageEvent.message as RosObject,
       frameId,
     );
+  };
+
+  #handleMirPointCloud = (messageEvent: PartialMessageEvent<MirObstacleCloud>): void => {
+    const new_msg = MirToRos(messageEvent);
+    this.#handleRosPointCloud(new_msg);
   };
 
   #handleRosPointCloud = (messageEvent: PartialMessageEvent<PointCloud2>): void => {
@@ -1065,6 +1078,19 @@ function getStride(pointCloud: PointCloud | PointCloud2): number {
 function getPose(pointCloud: PointCloud | PointCloud2): Pose {
   const maybeFoxglove = pointCloud as Partial<PointCloud>;
   return maybeFoxglove.pose ?? makePose();
+}
+
+function MirToRos(
+  messageEvent: PartialMessageEvent<MirObstacleCloud>,
+): PartialMessageEvent<PointCloud2> {
+  return {
+    topic: messageEvent.topic,
+    schemaName: messageEvent.schemaName,
+    receiveTime: messageEvent.receiveTime,
+    publishTime: messageEvent.publishTime,
+    message: messageEvent.message.cloud!,
+    sizeInBytes: messageEvent.sizeInBytes,
+  };
 }
 
 export function createStixelMaterial(settings: LayerSettingsPointClouds): THREE.LineBasicMaterial {
