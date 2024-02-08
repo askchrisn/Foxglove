@@ -12,6 +12,7 @@ import { LaserScans } from "@foxglove/studio-base/panels/ThreeDeeRender/renderab
 import { Markers } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/Markers";
 import { OccupancyGrids } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/OccupancyGrids";
 import { PointClouds } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/PointClouds";
+import { GridCells } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/PGridCells";
 import { Polygons } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/Polygons";
 import { PoseArrays } from "../../mir/PoseArrays";
 import { Poses } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/Poses";
@@ -98,6 +99,9 @@ export const DEFAULT_SCENE_EXTENSION_CONFIG: SceneExtensionConfig = {
     },
     [PointClouds.extensionId]: {
       init: (renderer: IRenderer) => new PointClouds(renderer),
+    },
+    [GridCells.extensionId]: {
+      init: (renderer: IRenderer) => new GridCells(renderer),
     },
     [Polygons.extensionId]: {
       init: (renderer: IRenderer) => new Polygons(renderer),
