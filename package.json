@@ -110,6 +110,8 @@
     "webpack-hot-middleware": "2.26.0"
   },
   "dependencies": {
+    "@types/earcut": "2.1.1",
+    "earcut": "2.2.4",
     "png-ts": "0.0.3"
   }
 }

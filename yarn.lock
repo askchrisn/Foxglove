@@ -5905,6 +5905,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/earcut@npm:2.1.1":
+  version: 2.1.1
+  resolution: "@types/earcut@npm:2.1.1"
+  checksum: 7845dab97ba2bf379caeb4fb91bb732e6710b0ce018a8e357f023cb96ac2fa5c64352461e93ecac2504966dcf6b0b882d117c2258cf15a679bd0063b3cee0e14
+  languageName: node
+  linkType: hard
+
 "@types/ejs@npm:^3.1.1":
   version: 3.1.2
   resolution: "@types/ejs@npm:3.1.2"
@@ -10021,6 +10028,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"earcut@npm:2.2.4":
+  version: 2.2.4
+  resolution: "earcut@npm:2.2.4"
+  checksum: aea0466cb2f24e0c3c57148d8d28ac9846f53c4f43ee66780826474303ac851b305ef988152d0bdeb31e8f7ca939dc0df737e7505cfb1c1bdf2ff9d7f9ea2faa
+  languageName: node
+  linkType: hard
+
 "eastasianwidth@npm:^0.2.0":
   version: 0.2.0
   resolution: "eastasianwidth@npm:0.2.0"
@@ -11551,6 +11565,7 @@ __metadata:
     "@types/babel__core": ^7.20.3
     "@types/babel__preset-env": ^7.9.6
     "@types/case-sensitive-paths-webpack-plugin": 2.1.9
+    "@types/earcut": 2.1.1
     "@types/jest": 29.5.11
     "@types/license-checker": ^25.0.6
     "@types/semver": ^7.5.3
@@ -11559,6 +11574,7 @@ __metadata:
     babel-plugin-transform-import-meta: 2.2.1
     cross-env: 7.0.3
     depcheck: 1.4.7
+    earcut: 2.2.4
     eslint: 8.50.0
     eslint-config-prettier: 9.1.0
     eslint-import-resolver-webpack: 0.13.8
