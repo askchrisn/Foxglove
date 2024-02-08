@@ -1,70 +1,36 @@
 import * as _ from "lodash-es";
 import * as THREE from "three";
 
-import { Time, toNanoSec } from "@foxglove/rostime";
-import { NumericType, PackedElementField, PointCloud } from "@foxglove/schemas";
+import { toNanoSec } from "@foxglove/rostime";
 import { SettingsTreeAction, MessageEvent } from "@foxglove/studio";
-import { DynamicBufferGeometry } from "@foxglove/studio-base/panels/ThreeDeeRender/DynamicBufferGeometry";
 import {
   createGeometry,
   createInstancePickingMaterial,
   createPickingMaterial,
   DEFAULT_POINT_SETTINGS,
   LayerSettingsPointExtension,
-  pointSettingsNode,
   pointCloudMaterial,
   pointCloudColorEncoding,
-  POINT_CLOUD_REQUIRED_FIELDS,
   RenderObjectHistory,
   PointsRenderable,
 } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/pointExtensionUtils";
 import type { RosObject, RosValue } from "@foxglove/studio-base/players/types";
 
+import { colorHasTransparency, getColorConverter, colorFieldComputedPrefix } from "../panels/ThreeDeeRender/renderables/colorMode";
+import type { AnyRendererSubscription, IRenderer } from "../panels/ThreeDeeRender/IRenderer";
+import { BaseUserData, Renderable } from "../panels/ThreeDeeRender/Renderable";
+import { PartialMessage, PartialMessageEvent, SceneExtension } from "../panels/ThreeDeeRender/SceneExtension";
+import { SettingsTreeEntry } from "../panels/ThreeDeeRender/SettingsManager";
+import { normalizeHeader } from "../panels/ThreeDeeRender/normalizeMessages";
 import {
-  autoSelectColorSettings,
-  colorHasTransparency,
-  getColorConverter,
-  colorFieldComputedPrefix,
-} from "./colorMode";
-import { FieldReader, getReader, isSupportedField } from "./pointClouds/fieldReaders";
-import type { AnyRendererSubscription, IRenderer } from "../IRenderer";
-import { BaseUserData, Renderable } from "../Renderable";
-import { PartialMessage, PartialMessageEvent, SceneExtension } from "../SceneExtension";
-import { SettingsTreeEntry, SettingsTreeNodeWithActionHandler } from "../SettingsManager";
-import { POINTCLOUD_DATATYPES as FOXGLOVE_POINTCLOUD_DATATYPES } from "../foxglove";
-import {
-  normalizeByteArray,
-  normalizeHeader,
-  normalizeTime,
-  normalizePose,
-  numericTypeToPointFieldType,
-} from "../normalizeMessages";
-import {
-  PointCloud2,
   POINTCLOUD_DATATYPES as ROS_POINTCLOUD_DATATYPES,
-  PointField,
-  PointFieldType,
-  MirObstacleCloud,
-  MIR_OBSTACLE_CLOUD,
   GridCell,
   GRID_CELLS_DATATYPES,
   CostmapData,
   MIR_COST_MAP_DATATYPE,
   Point,
-} from "../../../mir/ros";
-import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
-import { makePose, Pose } from "../transforms";
-
-type PointCloudFieldReaders = {
-  xReader: FieldReader;
-  yReader: FieldReader;
-  zReader: FieldReader;
-  packedColorReader: FieldReader;
-  redReader: FieldReader;
-  greenReader: FieldReader;
-  blueReader: FieldReader;
-  alphaReader: FieldReader;
-};
+} from "./ros";
+import { makePose } from "../panels/ThreeDeeRender/transforms";
 
 type LayerSettingsPointClouds = LayerSettingsPointExtension & {
   stixelsEnabled: boolean;
@@ -87,17 +53,7 @@ type GridCellHistoryUserData = BaseUserData & {
   gridCell?: GridCell;
 };
 
-const NEEDS_MIN_MAX = ["gradient", "colormap"];
-
-const ALL_POINTCLOUD_DATATYPES = new Set<string>([
-  ...FOXGLOVE_POINTCLOUD_DATATYPES,
-  ...ROS_POINTCLOUD_DATATYPES,
-]);
-
-const INVALID_POINTCLOUD = "INVALID_POINTCLOUD";
-
 const tempColor = { r: 0, g: 0, b: 0, a: 0 };
-const tempMinMaxColor: THREE.Vector2Tuple = [0, 0];
 
 type GridCellUserData = BaseUserData & {
   gridCell?: GridCell;

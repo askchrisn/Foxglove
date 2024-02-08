@@ -12,7 +12,7 @@ import { LaserScans } from "@foxglove/studio-base/panels/ThreeDeeRender/renderab
 import { Markers } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/Markers";
 import { OccupancyGrids } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/OccupancyGrids";
 import { PointClouds } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/PointClouds";
-import { GridCells } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/PGridCells";
+import { GridCells } from "@foxglove/studio-base/mir/GridCells";
 import { Polygons } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/Polygons";
 import { PoseArrays } from "../../mir/PoseArrays";
 import { Poses } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/Poses";
