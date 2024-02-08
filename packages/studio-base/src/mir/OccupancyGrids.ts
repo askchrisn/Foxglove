@@ -25,44 +25,46 @@ import {
   normalizeInt8Array,
   normalizeTime,
 } from "../panels/ThreeDeeRender/normalizeMessages";
-import { ColorRGBA, OccupancyGrid, OCCUPANCY_GRID_DATATYPES } from "./ros";
+import { OccupancyGrid, OCCUPANCY_GRID_DATATYPES } from "./ros";
 import { BaseSettings } from "../panels/ThreeDeeRender/settings";
 import { topicIsConvertibleToSchema } from "../panels/ThreeDeeRender/topicIsConvertibleToSchema";
+import PNG from "png-ts";
 
 type ColorModes = "custom" | "costmap" | "map" | "raw";
 
 export type LayerSettingsOccupancyGrid = BaseSettings & {
   frameLocked: boolean;
-  minColor: string;
-  maxColor: string;
-  unknownColor: string;
-  invalidColor: string;
-  colorMode: ColorModes;
-  alpha: number;
+  // minColor: string;
+  // maxColor: string;
+  // unknownColor: string;
+  // invalidColor: string;
+  // TODO: These were not on original commit, commenting them out anyways
+  // colorMode: ColorModes;
+  // alpha: number;
 };
 
 const INVALID_OCCUPANCY_GRID = "INVALID_OCCUPANCY_GRID";
 
-const DEFAULT_MIN_COLOR = { r: 1, g: 1, b: 1, a: 1 }; // white
-const DEFAULT_MAX_COLOR = { r: 0, g: 0, b: 0, a: 1 }; // black
-const DEFAULT_UNKNOWN_COLOR = { r: 0.5, g: 0.5, b: 0.5, a: 1 }; // gray
-const DEFAULT_INVALID_COLOR = { r: 1, g: 0, b: 1, a: 1 }; // magenta
-const DEFAULT_ALPHA = 1.0;
+// const DEFAULT_MIN_COLOR = { r: 1, g: 1, b: 1, a: 1 }; // white
+// const DEFAULT_MAX_COLOR = { r: 0, g: 0, b: 0, a: 1 }; // black
+// const DEFAULT_UNKNOWN_COLOR = { r: 0.5, g: 0.5, b: 0.5, a: 1 }; // gray
+// const DEFAULT_INVALID_COLOR = { r: 1, g: 0, b: 1, a: 1 }; // magenta
+// const DEFAULT_ALPHA = 1.0;
 
-const DEFAULT_MIN_COLOR_STR = rgbaToCssString(DEFAULT_MIN_COLOR);
-const DEFAULT_MAX_COLOR_STR = rgbaToCssString(DEFAULT_MAX_COLOR);
-const DEFAULT_UNKNOWN_COLOR_STR = rgbaToCssString(DEFAULT_UNKNOWN_COLOR);
-const DEFAULT_INVALID_COLOR_STR = rgbaToCssString(DEFAULT_INVALID_COLOR);
+// const DEFAULT_MIN_COLOR_STR = rgbaToCssString(DEFAULT_MIN_COLOR);
+// const DEFAULT_MAX_COLOR_STR = rgbaToCssString(DEFAULT_MAX_COLOR);
+// const DEFAULT_UNKNOWN_COLOR_STR = rgbaToCssString(DEFAULT_UNKNOWN_COLOR);
+// const DEFAULT_INVALID_COLOR_STR = rgbaToCssString(DEFAULT_INVALID_COLOR);
 
 const DEFAULT_SETTINGS: LayerSettingsOccupancyGrid = {
   visible: false,
   frameLocked: false,
-  colorMode: "custom",
-  minColor: DEFAULT_MIN_COLOR_STR,
-  maxColor: DEFAULT_MAX_COLOR_STR,
-  unknownColor: DEFAULT_UNKNOWN_COLOR_STR,
-  invalidColor: DEFAULT_INVALID_COLOR_STR,
-  alpha: DEFAULT_ALPHA,
+  // colorMode: "custom",
+  // minColor: DEFAULT_MIN_COLOR_STR,
+  // maxColor: DEFAULT_MAX_COLOR_STR,
+  // unknownColor: DEFAULT_UNKNOWN_COLOR_STR,
+  // invalidColor: DEFAULT_INVALID_COLOR_STR,
+  // alpha: DEFAULT_ALPHA,
 };
 
 export type OccupancyGridUserData = BaseUserData & {
@@ -114,69 +116,11 @@ export class OccupancyGrids extends SceneExtension<OccupancyGridRenderable> {
 
       const configWithDefaults = { ...DEFAULT_SETTINGS, ...configTopics[topic.name] };
 
-      let fields: SettingsTreeFields = {
-        colorMode: {
-          label: t("threeDee:colorMode"),
-          input: "select",
-          value: configWithDefaults.colorMode,
-          options: [
-            { label: t("threeDee:colorModeCustom"), value: "custom" },
-            { label: t("threeDee:colorModeRvizMap"), value: "map" },
-            { label: t("threeDee:colorModeRvizCostmap"), value: "costmap" },
-            { label: t("threeDee:colorModeRaw"), value: "raw" },
-          ],
-        },
-      };
-
-      if (configWithDefaults.colorMode === "custom") {
-        const customFields: SettingsTreeFields = {
-          minColor: {
-            label: t("threeDee:minColor"),
-            input: "rgba",
-            value: configWithDefaults.minColor,
-          },
-          maxColor: {
-            label: t("threeDee:maxColor"),
-            input: "rgba",
-            value: configWithDefaults.maxColor,
-          },
-          unknownColor: {
-            label: t("threeDee:unknownColor"),
-            input: "rgba",
-            value: configWithDefaults.unknownColor,
-          },
-          invalidColor: {
-            label: t("threeDee:invalidColor"),
-            input: "rgba",
-            value: configWithDefaults.invalidColor,
-          },
-        };
-        fields = {
-          ...fields,
-          ...customFields,
-        };
-      } else {
-        const paletteFields: SettingsTreeFields = {
-          alpha: {
-            label: "Alpha",
-            input: "number",
-            value: configWithDefaults.alpha,
-            min: 0.0,
-            max: 1.0,
-            step: 0.1,
-            placeholder: "auto",
-          },
-        };
-        fields = {
-          ...fields,
-          ...paletteFields,
-        };
-      }
-
+      let fields: SettingsTreeFields = {};
       fields.frameLocked = {
         label: t("threeDee:frameLock"),
         input: "boolean",
-        value: configWithDefaults.frameLocked,
+        value: configWithDefaults.frameLocked ?? false,
       };
 
       entries.push({
@@ -185,7 +129,7 @@ export class OccupancyGrids extends SceneExtension<OccupancyGridRenderable> {
           label: topic.name,
           icon: "Cells",
           fields,
-          visible: configWithDefaults.visible,
+          visible: configWithDefaults.visible ?? DEFAULT_SETTINGS.visible,
           order: topic.name.toLocaleLowerCase(),
           handler,
         },
@@ -206,14 +150,14 @@ export class OccupancyGrids extends SceneExtension<OccupancyGridRenderable> {
     const topicName = path[1]!;
     const renderable = this.renderables.get(topicName);
     if (renderable) {
-      const prevTransparent = occupancyGridHasTransparency(renderable.userData.settings);
+      const prevTransparent = occupancyGridHasTransparency(); // renderable.userData.settings
       const settings = this.renderer.config.topics[topicName] as
         | Partial<LayerSettingsOccupancyGrid>
         | undefined;
       renderable.userData.settings = { ...DEFAULT_SETTINGS, ...settings };
 
       // Check if the transparency changed and we need to create a new material
-      const newTransparent = occupancyGridHasTransparency(renderable.userData.settings);
+      const newTransparent = occupancyGridHasTransparency(); //renderable.userData.settings
       if (prevTransparent !== newTransparent) {
         renderable.userData.material.transparent = newTransparent;
         renderable.userData.material.depthWrite = !newTransparent;
@@ -246,7 +190,7 @@ export class OccupancyGrids extends SceneExtension<OccupancyGridRenderable> {
         this.constructor.name,
         createGeometry,
       );
-      const mesh = createMesh(topic, geometry, texture, settings);
+      const mesh = createMesh(topic, geometry, texture); // settings
       const material = mesh.material as THREE.MeshBasicMaterial;
       const pickingMaterial = mesh.userData.pickingMaterial as THREE.ShaderMaterial;
 
@@ -285,6 +229,25 @@ export class OccupancyGrids extends SceneExtension<OccupancyGridRenderable> {
     renderable.userData.messageTime = toNanoSec(occupancyGrid.header.stamp);
     renderable.userData.frameId = this.renderer.normalizeFrameId(occupancyGrid.header.frame_id);
 
+    const png_signature = [-119, 80, 78, 71];
+    if (
+      occupancyGrid.data[0] == png_signature[0] &&
+      occupancyGrid.data[1] == png_signature[1] &&
+      occupancyGrid.data[2] == png_signature[2] &&
+      occupancyGrid.data[3] == png_signature[3]
+    ) {
+      const data = new Uint8Array(occupancyGrid.data);
+      const pngImage = PNG.load(data);
+      const imgData = pngImage.decodePixels();
+
+      const pixels = new Int8Array(imgData.length);
+
+      for (let i = 0; i < pixels.length; i++) {
+        pixels[i] = imgData[i]!;
+      }
+      occupancyGrid.data = pixels;
+    }
+
     const size = occupancyGrid.info.width * occupancyGrid.info.height;
     if (occupancyGrid.data.length !== size) {
       const message = `OccupancyGrid data length (${occupancyGrid.data.length}) is not equal to width ${occupancyGrid.info.width} * height ${occupancyGrid.info.height}`;
@@ -306,7 +269,8 @@ export class OccupancyGrids extends SceneExtension<OccupancyGridRenderable> {
     }
 
     // Update the occupancy grid texture
-    updateTexture(texture, occupancyGrid, renderable.userData.settings);
+    // updateTexture(texture, occupancyGrid, renderable.userData.settings);
+    updateTexture(renderable.userData.topic, texture, occupancyGrid); // , renderable.userData.settings
 
     renderable.scale.set(resolution * width, resolution * height, 1);
   }
@@ -352,11 +316,12 @@ function createMesh(
   topic: string,
   geometry: THREE.PlaneGeometry,
   texture: THREE.DataTexture,
-  settings: LayerSettingsOccupancyGrid,
+  // settings: LayerSettingsOccupancyGrid,
 ): THREE.Mesh {
   // Create the texture, material, and mesh
   const pickingMaterial = createPickingMaterial(texture);
-  const material = createMaterial(texture, topic, settings);
+  // const material = createMaterial(texture, topic, settings);
+  const material = createMaterial(texture, topic);
   const mesh = new THREE.Mesh(geometry, material);
   mesh.castShadow = true;
   mesh.receiveShadow = true;
@@ -365,62 +330,194 @@ function createMesh(
   return mesh;
 }
 
-const tempColor = { r: 0, g: 0, b: 0, a: 0 };
-const tempUnknownColor = { r: 0, g: 0, b: 0, a: 0 };
-const tempInvalidColor = { r: 0, g: 0, b: 0, a: 0 };
-const tempMinColor = { r: 0, g: 0, b: 0, a: 0 };
-const tempMaxColor = { r: 0, g: 0, b: 0, a: 0 };
+// const tempColor = { r: 0, g: 0, b: 0, a: 0 };
+// const tempUnknownColor = { r: 0, g: 0, b: 0, a: 0 };
+// const tempInvalidColor = { r: 0, g: 0, b: 0, a: 0 };
+// const tempMinColor = { r: 0, g: 0, b: 0, a: 0 };
+// const tempMaxColor = { r: 0, g: 0, b: 0, a: 0 };
 
 function updateTexture(
+  topic: string,
   texture: THREE.DataTexture,
   occupancyGrid: OccupancyGrid,
-  settings: LayerSettingsOccupancyGrid,
+  // settings: LayerSettingsOccupancyGrid,
 ): void {
   const size = occupancyGrid.info.width * occupancyGrid.info.height;
   const rgba = texture.image.data;
-  stringToRgba(tempMinColor, settings.minColor);
-  stringToRgba(tempMaxColor, settings.maxColor);
-  stringToRgba(tempUnknownColor, settings.unknownColor);
-  stringToRgba(tempInvalidColor, settings.invalidColor);
+  // stringToRgba(tempMinColor, settings.minColor);
+  // stringToRgba(tempMaxColor, settings.maxColor);
+  // stringToRgba(tempUnknownColor, settings.unknownColor);
+  // stringToRgba(tempInvalidColor, settings.invalidColor);
 
-  srgbToLinearUint8(tempMinColor);
-  srgbToLinearUint8(tempMaxColor);
-  srgbToLinearUint8(tempUnknownColor);
-  srgbToLinearUint8(tempInvalidColor);
+  // srgbToLinearUint8(tempMinColor);
+  // srgbToLinearUint8(tempMaxColor);
+  // srgbToLinearUint8(tempUnknownColor);
+  // srgbToLinearUint8(tempInvalidColor);
 
   const data = occupancyGrid.data;
-  for (let i = 0; i < size; i++) {
-    const value = data[i]! | 0;
-    const offset = i * 4;
-    if (settings.colorMode === "custom") {
-      if (value === -1) {
-        // Unknown (-1)
-        rgba[offset + 0] = tempUnknownColor.r;
-        rgba[offset + 1] = tempUnknownColor.g;
-        rgba[offset + 2] = tempUnknownColor.b;
-        rgba[offset + 3] = tempUnknownColor.a;
-      } else if (value >= 0 && value <= 100) {
-        // Valid [0-100]
-        const frac = value / 100;
 
-        rgba[offset + 0] = tempMinColor.r + (tempMaxColor.r - tempMinColor.r) * frac;
-        rgba[offset + 1] = tempMinColor.g + (tempMaxColor.g - tempMinColor.g) * frac;
-        rgba[offset + 2] = tempMinColor.b + (tempMaxColor.b - tempMinColor.b) * frac;
-        rgba[offset + 3] = tempMinColor.a + (tempMaxColor.a - tempMinColor.a) * frac;
-      } else {
-        // Invalid (< -1 or > 100)
-        rgba[offset + 0] = tempInvalidColor.r;
-        rgba[offset + 1] = tempInvalidColor.g;
-        rgba[offset + 2] = tempInvalidColor.b;
-        rgba[offset + 3] = tempInvalidColor.a;
+  switch (topic) {
+    case "/traffic_map":
+      for (let i = 0; i < size; i++) {
+        const value = data[i]! & 0xff;
+        const offset = i * 4;
+        switch (value) {
+          case 0:
+            rgba[offset + 0] = 0;
+            rgba[offset + 1] = 255;
+            rgba[offset + 2] = 0;
+            rgba[offset + 3] = 128;
+            break;
+          case 100:
+            rgba[offset + 0] = 0;
+            rgba[offset + 1] = 0;
+            rgba[offset + 2] = 255;
+            rgba[offset + 3] = 128;
+            break;
+          default:
+            rgba[offset + 0] = 0;
+            rgba[offset + 1] = 0;
+            rgba[offset + 2] = 0;
+            rgba[offset + 3] = 0;
+            break;
+        }
       }
-    } else {
-      paletteColorCached(tempColor, value, settings.colorMode);
-      rgba[offset + 0] = tempColor.r;
-      rgba[offset + 1] = tempColor.g;
-      rgba[offset + 2] = tempColor.b;
-      rgba[offset + 3] = tempColor.a * settings.alpha;
-    }
+      break;
+    case "/one_way_map":
+      for (let i = 0; i < size; i++) {
+        const value = data[i]! & 0xff;
+        const offset = i * 4;
+        let red = 0;
+        let green = 0;
+        let blue = 0;
+        let alpha = 128;
+        if (value == 255) {
+          alpha = 0;
+        }
+        if ((value & 0b11000111) == 0b11000111) {
+          // 0 degrees
+          red |= 0b10000000;
+        }
+
+        if ((value & 0b10001111) == 0b10001111) {
+          // +45 degrees
+          green |= 0b01000000;
+        }
+
+        if ((value & 0b00011111) == 0b00011111) {
+          // +90 degrees
+          red |= 0b00100000;
+        }
+
+        if ((value & 0b00111110) == 0b00111110) {
+          // +135 degrees
+          blue |= 0b10000000;
+        }
+
+        if ((value & 0b01111100) == 0b01111100) {
+          // +/-180 degrees
+          green |= 0b00100000;
+        }
+
+        if ((value & 0b11111000) == 0b11111000) {
+          // -135 degrees
+          green |= 0b10000000;
+        }
+
+        if ((value & 0b11110001) == 0b11110001) {
+          // -90 degrees
+          red |= 0b01000000;
+        }
+
+        if ((value & 0b11100011) == 0b11100011) {
+          // -45 degrees
+          blue |= 0b01000000;
+        }
+        rgba[offset + 0] = red;
+        rgba[offset + 1] = green;
+        rgba[offset + 2] = blue;
+        rgba[offset + 3] = alpha;
+      }
+      break;
+    case "/move_base_node/local_costmap/costmap_data":
+      for (let i = 0; i < size; i++) {
+        const value = data[i]! & 0xff;
+        const offset = i * 4;
+        switch (value) {
+          case 0:
+            // Free
+            rgba[offset + 0] = 0;
+            rgba[offset + 1] = 0;
+            rgba[offset + 2] = 0;
+            rgba[offset + 3] = 0;
+            break;
+          case 1:
+            // Obstacle
+            rgba[offset + 0] = 0x00;
+            rgba[offset + 1] = 0x00;
+            rgba[offset + 2] = 0x8b;
+            rgba[offset + 3] = 128;
+            break;
+          case 2:
+            // Inflated
+            rgba[offset + 0] = 0x39;
+            rgba[offset + 1] = 0xff;
+            rgba[offset + 2] = 0x14;
+            rgba[offset + 3] = 128;
+            break;
+          default:
+            rgba[offset + 0] = 0;
+            rgba[offset + 1] = 0;
+            rgba[offset + 2] = 0;
+            rgba[offset + 3] = 0;
+            break;
+        }
+      }
+      break;
+    default:
+      for (let i = 0; i < size; i++) {
+        const value = data[i]! & 0xff;
+        const offset = i * 4;
+        switch (value) {
+          case 0:
+            rgba[offset + 0] = 255;
+            rgba[offset + 1] = 255;
+            rgba[offset + 2] = 255;
+            rgba[offset + 3] = 128;
+            break;
+          case 224:
+            rgba[offset + 0] = 0;
+            rgba[offset + 1] = 0;
+            rgba[offset + 2] = 0;
+            rgba[offset + 3] = 128;
+            break;
+          case 192:
+            rgba[offset + 0] = 255;
+            rgba[offset + 1] = 168;
+            rgba[offset + 2] = 168;
+            rgba[offset + 3] = 128;
+            break;
+          case 96:
+            rgba[offset + 0] = 128;
+            rgba[offset + 1] = 128;
+            rgba[offset + 2] = 128;
+            rgba[offset + 3] = 128;
+            break;
+          case 95:
+            rgba[offset + 0] = 255;
+            rgba[offset + 1] = 165;
+            rgba[offset + 2] = 0;
+            rgba[offset + 3] = 128;
+            break;
+          default:
+            rgba[offset + 0] = 0;
+            rgba[offset + 1] = 0;
+            rgba[offset + 2] = 0;
+            rgba[offset + 3] = 0;
+            break;
+        }
+      }
+      break;
   }
 
   texture.needsUpdate = true;
@@ -429,9 +526,10 @@ function updateTexture(
 function createMaterial(
   texture: THREE.DataTexture,
   topic: string,
-  settings: LayerSettingsOccupancyGrid,
+  // settings: LayerSettingsOccupancyGrid,
 ): THREE.MeshBasicMaterial {
-  const transparent = occupancyGridHasTransparency(settings);
+  // const transparent = occupancyGridHasTransparency(settings);
+  const transparent = occupancyGridHasTransparency();
   return new THREE.MeshBasicMaterial({
     name: `${topic}:Material`,
     // Enable alpha clipping. Fully transparent (alpha=0) pixels are skipped
@@ -470,26 +568,27 @@ function createPickingMaterial(texture: THREE.DataTexture): THREE.ShaderMaterial
   });
 }
 
-function occupancyGridHasTransparency(settings: LayerSettingsOccupancyGrid): boolean {
-  if (settings.colorMode === "custom") {
-    stringToRgba(tempMinColor, settings.minColor);
-    stringToRgba(tempMaxColor, settings.maxColor);
-    stringToRgba(tempUnknownColor, settings.unknownColor);
-    stringToRgba(tempInvalidColor, settings.invalidColor);
-    return (
-      tempMinColor.a < 1 || tempMaxColor.a < 1 || tempInvalidColor.a < 1 || tempUnknownColor.a < 1
-    );
-  } else {
-    return true;
-  }
+function occupancyGridHasTransparency(): boolean {
+  // if (settings.colorMode === "custom") {
+  //   stringToRgba(tempMinColor, settings.minColor);
+  //   stringToRgba(tempMaxColor, settings.maxColor);
+  //   stringToRgba(tempUnknownColor, settings.unknownColor);
+  //   stringToRgba(tempInvalidColor, settings.invalidColor);
+  //   return (
+  //     tempMinColor.a < 1 || tempMaxColor.a < 1 || tempInvalidColor.a < 1 || tempUnknownColor.a < 1
+  //   );
+  // } else {
+  //   return true;
+  // }
+  return true;
 }
 
-function srgbToLinearUint8(color: ColorRGBA): void {
-  color.r = Math.trunc(SRGBToLinear(color.r) * 255);
-  color.g = Math.trunc(SRGBToLinear(color.g) * 255);
-  color.b = Math.trunc(SRGBToLinear(color.b) * 255);
-  color.a = Math.trunc(color.a * 255);
-}
+// function srgbToLinearUint8(color: ColorRGBA): void {
+//   color.r = Math.trunc(SRGBToLinear(color.r) * 255);
+//   color.g = Math.trunc(SRGBToLinear(color.g) * 255);
+//   color.b = Math.trunc(SRGBToLinear(color.b) * 255);
+//   color.a = Math.trunc(color.a * 255);
+// }
 
 function normalizeOccupancyGrid(message: PartialMessage<OccupancyGrid>): OccupancyGrid {
   const info = message.info ?? {};
@@ -517,53 +616,53 @@ let rawPalette: [number, number, number, number][] | undefined;
  * @param value - Int8 or Uint8 value to map to a color
  * @param paletteColorMode - "costmap", "map", or "raw" these are the predefined palette colormodes. Their palette will be used to determine the output color
  */
-function paletteColorCached(
-  output: ColorRGBA,
-  value: number,
-  paletteColorMode: "costmap" | "map" | "raw",
-) {
-  const unsignedValue = value >= 0 ? value : value + 256;
-  if (unsignedValue < 0 || unsignedValue > 255) {
-    output.r = 0;
-    output.g = 0;
-    output.b = 0;
-    output.a = 0;
-  }
+// function paletteColorCached(
+//   output: ColorRGBA,
+//   value: number,
+//   paletteColorMode: "costmap" | "map" | "raw",
+// ) {
+//   const unsignedValue = value >= 0 ? value : value + 256;
+//   if (unsignedValue < 0 || unsignedValue > 255) {
+//     output.r = 0;
+//     output.g = 0;
+//     output.b = 0;
+//     output.a = 0;
+//   }
 
-  let palette: [number, number, number, number][] | undefined;
-  switch (paletteColorMode) {
-    case "costmap":
-      if (!costmapPalette) {
-        costmapPalette = createCostmapPalette();
-      }
-      palette = costmapPalette;
-      break;
-    case "map":
-      if (!mapPalette) {
-        mapPalette = createMapPalette();
-      }
-      palette = mapPalette;
-      break;
-    case "raw":
-      if (!rawPalette) {
-        rawPalette = createRawPalette();
-      }
-      palette = rawPalette;
-      break;
-    default:
-      // Default to raw palette if unknown colormode, the user will have an error already in the settings
-      if (!rawPalette) {
-        rawPalette = createRawPalette();
-      }
-      palette = rawPalette;
-  }
+//   let palette: [number, number, number, number][] | undefined;
+//   switch (paletteColorMode) {
+//     case "costmap":
+//       if (!costmapPalette) {
+//         costmapPalette = createCostmapPalette();
+//       }
+//       palette = costmapPalette;
+//       break;
+//     case "map":
+//       if (!mapPalette) {
+//         mapPalette = createMapPalette();
+//       }
+//       palette = mapPalette;
+//       break;
+//     case "raw":
+//       if (!rawPalette) {
+//         rawPalette = createRawPalette();
+//       }
+//       palette = rawPalette;
+//       break;
+//     default:
+//       // Default to raw palette if unknown colormode, the user will have an error already in the settings
+//       if (!rawPalette) {
+//         rawPalette = createRawPalette();
+//       }
+//       palette = rawPalette;
+//   }
 
-  const colorRaw = palette[Math.trunc(unsignedValue)]!;
-  output.r = colorRaw[0];
-  output.g = colorRaw[1];
-  output.b = colorRaw[2];
-  output.a = colorRaw[3];
-}
+//   const colorRaw = palette[Math.trunc(unsignedValue)]!;
+//   output.r = colorRaw[0];
+//   output.g = colorRaw[1];
+//   output.b = colorRaw[2];
+//   output.a = colorRaw[3];
+// }
 
 // Based off of rviz map implementation
 // https://github.com/ros-visualization/rviz/blob/1f622b8c95b8e188841b5505db2f97394d3e9c6c/src/rviz/default_plugin/map_display.cpp#L284

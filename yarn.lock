@@ -11575,6 +11575,7 @@ __metadata:
     jest: 29.7.0
     jest-environment-jsdom: 29.7.0
     license-checker: 25.0.1
+    png-ts: 0.0.3
     prettier: 3.0.3
     rimraf: 5.0.5
     semver: 7.5.4
@@ -16025,17 +16026,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pako@npm:^1.0.6, pako@npm:~1.0.5":
+  version: 1.0.11
+  resolution: "pako@npm:1.0.11"
+  checksum: 1be2bfa1f807608c7538afa15d6f25baa523c30ec870a3228a89579e474a4d992f4293859524e46d5d87fd30fa17c5edf34dbef0671251d9749820b488660b16
+  languageName: node
+  linkType: hard
+
 "pako@npm:~0.2.0":
   version: 0.2.9
   resolution: "pako@npm:0.2.9"
   checksum: 055f9487cd57fbb78df84315873bbdd089ba286f3499daed47d2effdc6253e981f5db6898c23486de76d4a781559f890d643bd3a49f70f1b4a18019c98aa5125
-  languageName: node
-  linkType: hard
-
-"pako@npm:~1.0.5":
-  version: 1.0.11
-  resolution: "pako@npm:1.0.11"
-  checksum: 1be2bfa1f807608c7538afa15d6f25baa523c30ec870a3228a89579e474a4d992f4293859524e46d5d87fd30fa17c5edf34dbef0671251d9749820b488660b16
   languageName: node
   linkType: hard
 
@@ -16375,6 +16376,15 @@ __metadata:
   dependencies:
     semver-compare: ^1.0.0
   checksum: d87c41581a2a022fbe25965a97006238cd9b8cbbf49b39f78d262548149a9d30bd2bdf35fec3d810e0001e630cd46ef13c7e19c389dea8de7e64db271a2381bb
+  languageName: node
+  linkType: hard
+
+"png-ts@npm:0.0.3":
+  version: 0.0.3
+  resolution: "png-ts@npm:0.0.3"
+  dependencies:
+    pako: ^1.0.6
+  checksum: c1a87455975d419bd01ce1219707a506936ec78bdb60530ab559ffcb4e4da799dd636ae000a3ac0fe9c942c94b3fa1e6e7023d5b2a18e371264354cc87dc0307
   languageName: node
   linkType: hard
 

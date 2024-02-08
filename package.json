@@ -108,5 +108,8 @@
     "webpack-cli": "5.1.4",
     "webpack-dev-server": "4.15.1",
     "webpack-hot-middleware": "2.26.0"
+  },
+  "dependencies": {
+    "png-ts": "0.0.3"
   }
 }
