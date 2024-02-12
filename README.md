@@ -9,9 +9,9 @@ Currently main is based on Foxglove release/v1.86.1
 Move the following files over from the original [MiR Project](https://git.mirdev.net/mir/mir_webviz)
 
 ```ORIGINAL FILE``` -> ```NEW FILE NAME(S)```
-- Markers.ts -> RenderableMarker.ts
-- OccupancyGrids.ts -> OccupancyGrids.ts
-- PointCloudsAndLaserScans.ts -> PointClouds.ts & LaserScans.ts
+- DONE Markers.ts -> RenderableMarker.ts
+- DONE OccupancyGrids.ts -> OccupancyGrids.ts
+- DONE PointCloudsAndLaserScans.ts -> PointClouds.ts & LaserScans.ts
 - DONE PoseArrays.ts -> PoseArrays.ts
 - DONE defaultLayout.ts -> defaultLayout.ts
 - DONE ros.ts -> ros.ts
