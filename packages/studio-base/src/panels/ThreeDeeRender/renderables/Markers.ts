@@ -25,6 +25,8 @@ import {
 import { Marker, MarkerArray, MARKER_ARRAY_DATATYPES, MARKER_DATATYPES } from "../ros";
 import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
 import { makePose } from "../transforms";
+import { handleMirNavigationMap } from "@foxglove/studio-base/mir/Markers";
+import { MIR_NAVIGATION_MAP_DATATYPES } from "@foxglove/studio-base/mir/ros";
 
 const DEFAULT_SETTINGS: LayerSettingsMarker = {
   visible: false,
@@ -51,6 +53,11 @@ export class Markers extends SceneExtension<TopicMarkers> {
         schemaNames: MARKER_DATATYPES,
         subscription: { handler: this.#handleMarker },
       },
+      {
+        type: "schema",
+        schemaNames: MIR_NAVIGATION_MAP_DATATYPES,
+        subscription: { handler: (message: any) => handleMirNavigationMap(message, this.#addMarker.bind(this)) },
+      }
     ];
   }
 
@@ -61,7 +68,8 @@ export class Markers extends SceneExtension<TopicMarkers> {
       if (
         !(
           topicIsConvertibleToSchema(topic, MARKER_ARRAY_DATATYPES) ||
-          topicIsConvertibleToSchema(topic, MARKER_DATATYPES)
+          topicIsConvertibleToSchema(topic, MARKER_DATATYPES) ||
+          topicIsConvertibleToSchema(topic, MIR_NAVIGATION_MAP_DATATYPES)
         )
       ) {
         continue;
@@ -72,7 +80,7 @@ export class Markers extends SceneExtension<TopicMarkers> {
         label: topic.name,
         icon: "Shapes",
         order: topic.name.toLocaleLowerCase(),
-        fields: {
+        fields: !topicIsConvertibleToSchema(topic, MIR_NAVIGATION_MAP_DATATYPES) ?{
           color: { label: t("threeDee:color"), input: "rgba", value: config.color },
           showOutlines: {
             label: t("threeDee:showOutline"),
@@ -86,7 +94,7 @@ export class Markers extends SceneExtension<TopicMarkers> {
             value: config.selectedIdVariable,
             placeholder: SELECTED_ID_VARIABLE,
           },
-        },
+        } : {},
         visible: config.visible ?? DEFAULT_SETTINGS.visible,
         handler: this.handleSettingsAction,
       };
