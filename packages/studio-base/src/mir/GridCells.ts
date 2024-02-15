@@ -480,7 +480,7 @@ export class GridCells extends SceneExtension<GridCellHistoryRenderable> {
     renderable.updateGridCell(gridCell, messageEvent.message as RosObject, renderable.userData.settings, receiveTime);
   };
 
-  #handleMirLocalCostmap = (messageEvent: PartialMessageEvent<GridCell>): void => {
+  #handleMirLocalCostmap = (messageEvent: PartialMessageEvent<CostmapData>): void => {
     const { topic, schemaName } = messageEvent;
     const costmap_data = normalizeCostmapData(messageEvent.message);
     const receiveTime = toNanoSec(messageEvent.receiveTime);
