@@ -28,7 +28,7 @@ import {
   CostmapData,
   MIR_COST_MAP_DATATYPE,
 } from "./ros";
-import { POINTCLOUD_DATATYPES, Point } from "@foxglove/studio-base/panels/ThreeDeeRender/ros";}
+import { POINTCLOUD_DATATYPES, Point } from "@foxglove/studio-base/panels/ThreeDeeRender/ros";
 import { makePose } from "../panels/ThreeDeeRender/transforms";
 
 type LayerSettingsPointClouds = LayerSettingsPointExtension & {
