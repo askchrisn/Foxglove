@@ -23,13 +23,12 @@ import { PartialMessage, PartialMessageEvent, SceneExtension } from "../panels/T
 import { SettingsTreeEntry } from "../panels/ThreeDeeRender/SettingsManager";
 import { normalizeHeader } from "../panels/ThreeDeeRender/normalizeMessages";
 import {
-  POINTCLOUD_DATATYPES as ROS_POINTCLOUD_DATATYPES,
   GridCell,
   GRID_CELLS_DATATYPES,
   CostmapData,
   MIR_COST_MAP_DATATYPE,
-  Point,
 } from "./ros";
+import { POINTCLOUD_DATATYPES, Point } from "@foxglove/studio-base/panels/ThreeDeeRender/ros";}
 import { makePose } from "../panels/ThreeDeeRender/transforms";
 
 type LayerSettingsPointClouds = LayerSettingsPointExtension & {

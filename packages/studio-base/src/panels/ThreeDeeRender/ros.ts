@@ -351,7 +351,7 @@ addRosDataType(IMAGE_MARKER_ARRAY_DATATYPES, "visualization_msgs/ImageMarkerArra
 
 // Expand a single ROS1 dataType into variations for ROS2 and protobufs,
 // then add them to the given output set
-function addRosDataType(output: Set<string>, dataType: string): Set<string> {
+export function addRosDataType(output: Set<string>, dataType: string): Set<string> {
   // Add the ROS1 variation: tf2_msgs/TFMessage
   output.add(dataType);
 
