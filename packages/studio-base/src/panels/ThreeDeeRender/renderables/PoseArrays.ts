@@ -46,8 +46,6 @@ import {
 } from "../settings";
 import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
 import { makePose, Pose } from "../transforms";
-import { MIR_ROBOT_STATE_PATH_DATATYPES, MIR_TRAJECTORY_PATH_DATATYPES, MirRobotState, MirRobotStatePath, MirTrajectoryPath, MirTrajectoryPoint } from "@foxglove/studio-base/mir/ros";
-import { normalizeMirPoseArray, normalizeMirTrajecoryArray } from "@foxglove/studio-base/mir/PoseArrays";
 
 type GradientRgba = [ColorRGBA, ColorRGBA];
 type Gradient = [string, string];
@@ -59,17 +57,15 @@ export type LayerSettingsPoseArray = BaseSettings & {
   arrowScale: [number, number, number];
   lineWidth: number;
   gradient: Gradient;
-  trolley: boolean;
 };
 
-const DEFAULT_TROLLEY = false;
-const DEFAULT_TYPE: DisplayType = "line";
+const DEFAULT_TYPE: DisplayType = "axis";
 const DEFAULT_AXIS_SCALE = AXIS_LENGTH;
 const DEFAULT_ARROW_SCALE: THREE.Vector3Tuple = [1, 0.15, 0.15];
-const DEFAULT_LINE_WIDTH = 0.05;
+const DEFAULT_LINE_WIDTH = 0.2;
 const DEFAULT_GRADIENT: GradientRgba = [
-  { r: 0 / 255, g: 255 / 255, b: 0 / 255, a: 1 },
-  { r: 0 / 255, g: 255 / 255, b: 0 / 255, a: 1 },
+  { r: 124 / 255, g: 107 / 255, b: 1, a: 1 },
+  { r: 124 / 255, g: 107 / 255, b: 1, a: 0.5 },
 ];
 
 const MISMATCHED_FRAME_ID = "MISMATCHED_FRAME_ID";
@@ -89,7 +85,6 @@ const DEFAULT_SETTINGS: LayerSettingsPoseArray = {
   arrowScale: DEFAULT_ARROW_SCALE,
   lineWidth: DEFAULT_LINE_WIDTH,
   gradient: DEFAULT_GRADIENT_STR,
-  trolley: false,
 };
 
 const tempColor1 = makeRgba();
@@ -104,10 +99,6 @@ export type PoseArrayUserData = BaseUserData & {
   axes: Axis[];
   arrows: RenderableArrow[];
   lineStrip?: RenderableLineStrip;
-  trolley_axes: Axis[];
-  trolley_angles: number[];
-  robot_angles: number[];
-  trolley_length: number;
 };
 
 export class PoseArrayRenderable extends Renderable<PoseArrayUserData> {
@@ -149,14 +140,6 @@ export class PoseArrayRenderable extends Renderable<PoseArrayUserData> {
       this.userData.lineStrip = undefined;
     }
   }
-
-  public removeTrolley(): void {
-    for (const trolley_axes of this.userData.trolley_axes) {
-      this.remove(trolley_axes);
-      trolley_axes.dispose();
-    }
-    this.userData.trolley_axes.length = 0;
-  }
 }
 
 export class PoseArrays extends SceneExtension<PoseArrayRenderable> {
@@ -182,16 +165,6 @@ export class PoseArrays extends SceneExtension<PoseArrayRenderable> {
         schemaNames: NAV_PATH_DATATYPES,
         subscription: { handler: this.#handleNavPath, filterQueue: onlyLastByTopicMessage },
       },
-      {
-        type: "schema",
-        schemaNames: MIR_ROBOT_STATE_PATH_DATATYPES,
-        subscription: { handler: this.#handleMirRobotStatePath, filterQueue: onlyLastByTopicMessage },
-      },
-      {
-        type: "schema",
-        schemaNames: MIR_TRAJECTORY_PATH_DATATYPES,
-        subscription: { handler: this.#handleMirTrajectoryPath, filterQueue: onlyLastByTopicMessage },
-      },
     ];
   }
 
@@ -204,9 +177,7 @@ export class PoseArrays extends SceneExtension<PoseArrayRenderable> {
         !(
           topicIsConvertibleToSchema(topic, POSE_ARRAY_DATATYPES) ||
           topicIsConvertibleToSchema(topic, NAV_PATH_DATATYPES) ||
-          topicIsConvertibleToSchema(topic, POSES_IN_FRAME_DATATYPES) ||
-          topicIsConvertibleToSchema(topic, MIR_ROBOT_STATE_PATH_DATATYPES) ||
-          topicIsConvertibleToSchema(topic, MIR_TRAJECTORY_PATH_DATATYPES)
+          topicIsConvertibleToSchema(topic, POSES_IN_FRAME_DATATYPES)
         )
       ) {
         continue;
@@ -216,7 +187,6 @@ export class PoseArrays extends SceneExtension<PoseArrayRenderable> {
       const { axisScale, lineWidth } = config;
       const arrowScale = config.arrowScale ?? DEFAULT_ARROW_SCALE;
       const gradient = config.gradient ?? DEFAULT_GRADIENT_STR;
-      const trolley_bool = config.trolley ?? DEFAULT_TROLLEY;
 
       const fields: SettingsTreeFields = {
         type: {
@@ -250,12 +220,6 @@ export class PoseArrays extends SceneExtension<PoseArrayRenderable> {
       if (displayType !== "axis") {
         fields["gradient"] = fieldGradient(t("threeDee:gradient"), gradient);
       }
-
-      fields["trolley"] = {
-        label: "Using trolley",
-        input: "boolean",
-        value: trolley_bool,
-      };
 
       entries.push({
         path: ["topics", topic.name],
@@ -295,117 +259,6 @@ export class PoseArrays extends SceneExtension<PoseArrayRenderable> {
         { ...DEFAULT_SETTINGS, ...defaultType, ...settings },
       );
     }
-  };
-
-  #handleMirTrajectoryPath = (
-    messageEvent: PartialMessageEvent<MirTrajectoryPath>,
-  ): void => {
-    const poseArrayMessage = normalizeMirTrajecoryArray(messageEvent.message);
-    const receiveTime = toNanoSec(messageEvent.receiveTime);
-    const topic = messageEvent.topic;
-    const originalMessage: Record<string, RosValue> = messageEvent.message;
-
-    let renderable = this.renderables.get(topic);
-    if (!renderable) {
-      // Set the initial settings from default values merged with any user settings
-      const userSettings = this.renderer.config.topics[topic] as
-        | Partial<LayerSettingsPoseArray>
-        | undefined;
-      const defaultType = { type: getDefaultType(this.renderer.topicsByName?.get(topic)) };
-      const settings = { ...DEFAULT_SETTINGS, ...defaultType, ...userSettings };
-
-      renderable = new PoseArrayRenderable(topic, this.renderer, {
-        receiveTime,
-        messageTime: toNanoSec(poseArrayMessage.header.stamp),
-        frameId: this.renderer.normalizeFrameId(poseArrayMessage.header.frame_id),
-        pose: makePose(),
-        settingsPath: ["topics", topic],
-        settings,
-        topic,
-        poseArrayMessage,
-        originalMessage,
-        axes: [],
-        arrows: [],
-        trolley_angles: [],
-        trolley_axes: [],
-        robot_angles: [],
-        trolley_length: 0,
-      });
-
-      this.add(renderable);
-      this.renderables.set(topic, renderable);
-    }
-
-    this.#updatePoseArrayRenderable(
-      renderable,
-      poseArrayMessage,
-      originalMessage,
-      receiveTime,
-      renderable.userData.settings,
-    );
-  };
-
-  #handleMirRobotStatePath = (
-    messageEvent: PartialMessageEvent<MirRobotStatePath>,
-  ): void => {
-    const poseArrayMessage = normalizeMirPoseArray(messageEvent.message);
-    const receiveTime = toNanoSec(messageEvent.receiveTime);
-    const topic = messageEvent.topic;
-    const originalMessage: Record<string, RosValue> = messageEvent.message;
-
-    let renderable = this.renderables.get(topic);
-    if (!renderable) {
-      // Set the initial settings from default values merged with any user settings
-      const userSettings = this.renderer.config.topics[topic] as
-        | Partial<LayerSettingsPoseArray>
-        | undefined;
-      const defaultType = { type: getDefaultType(this.renderer.topicsByName?.get(topic)) };
-      const settings = { ...DEFAULT_SETTINGS, ...defaultType, ...userSettings };
-
-      renderable = new PoseArrayRenderable(topic, this.renderer, {
-        receiveTime,
-        messageTime: toNanoSec(poseArrayMessage.header.stamp),
-        frameId: this.renderer.normalizeFrameId(poseArrayMessage.header.frame_id),
-        pose: makePose(),
-        settingsPath: ["topics", topic],
-        settings,
-        topic,
-        poseArrayMessage,
-        originalMessage,
-        axes: [],
-        arrows: [],
-        trolley_angles: [],
-        trolley_axes: [],
-        robot_angles: [],
-        trolley_length: 0,
-      });
-
-      this.add(renderable);
-      this.renderables.set(topic, renderable);
-    }
-
-    if (messageEvent.message.has_trolley === true) {
-      // Bla
-      renderable.userData.trolley_length = messageEvent.message.robot_to_trolley_dist ?? 0;
-
-      renderable.userData.robot_angles = [];
-      messageEvent.message.path?.forEach((_value) => {
-        renderable!.userData.robot_angles.push(_value?.pose_theta ?? 0);
-      });
-
-      renderable.userData.trolley_angles = [];
-      messageEvent.message.path?.forEach((_value) => {
-        renderable!.userData.trolley_angles.push(_value?.hook_angle ?? 0);
-      });
-    }
-
-    this.#updatePoseArrayRenderable(
-      renderable,
-      poseArrayMessage,
-      originalMessage,
-      receiveTime,
-      renderable.userData.settings,
-    );
   };
 
   #handlePoseArray = (messageEvent: PartialMessageEvent<PoseArray>): void => {
@@ -457,10 +310,6 @@ export class PoseArrays extends SceneExtension<PoseArrayRenderable> {
         originalMessage,
         axes: [],
         arrows: [],
-        trolley_angles: [],
-        trolley_axes: [],
-        robot_angles: [],
-        trolley_length: 0,
       });
 
       this.add(renderable);
@@ -474,41 +323,6 @@ export class PoseArrays extends SceneExtension<PoseArrayRenderable> {
       receiveTime,
       renderable.userData.settings,
     );
-  }
-
-  #createTrolleyAxesToMatchPoses(
-    renderable: PoseArrayRenderable,
-    poseArray: PoseArray,
-    topic: string,
-  ): void {
-    const scale = 0.1 * (1 / AXIS_LENGTH);
-
-    // Update the scale and visibility of existing AxisRenderables as needed
-    const existingUpdateCount = Math.min(
-      renderable.userData.trolley_axes.length,
-      poseArray.poses.length,
-    );
-    for (let i = 0; i < existingUpdateCount; i++) {
-      const axis = renderable.userData.trolley_axes[i]!;
-      axis.visible = true;
-      axis.scale.set(scale, scale, scale);
-    }
-
-    // Create any AxisRenderables as needed
-    for (let i = renderable.userData.trolley_axes.length; i < poseArray.poses.length; i++) {
-      const axis = new Axis(topic, this.renderer);
-      renderable.userData.trolley_axes.push(axis);
-      renderable.add(axis);
-
-      // Set the scale for each new axis
-      axis.scale.set(scale, scale, scale);
-    }
-
-    // Hide any AxisRenderables as needed
-    for (let i = poseArray.poses.length; i < renderable.userData.trolley_axes.length; i++) {
-      const axis = renderable.userData.trolley_axes[i]!;
-      axis.visible = false;
-    }
   }
 
   #createAxesToMatchPoses(
@@ -600,7 +414,6 @@ export class PoseArrays extends SceneExtension<PoseArrayRenderable> {
 
     const { topic, settings: prevSettings } = renderable.userData;
     const axisOrArrowSettingsChanged =
-      settings.trolley !== prevSettings.trolley ||
       settings.type !== prevSettings.type ||
       settings.axisScale !== prevSettings.axisScale ||
       !_.isEqual(settings.arrowScale, prevSettings.arrowScale) ||
@@ -613,9 +426,6 @@ export class PoseArrays extends SceneExtension<PoseArrayRenderable> {
     const colorEnd = stringToRgba(tempColor2, settings.gradient[1]);
 
     if (axisOrArrowSettingsChanged) {
-      if (renderable.userData.settings.trolley) {
-        renderable.removeTrolley();
-      }
       switch (renderable.userData.settings.type) {
         case "axis":
           renderable.removeArrows();
@@ -655,19 +465,6 @@ export class PoseArrays extends SceneExtension<PoseArrayRenderable> {
       }
     }
 
-    if (settings.trolley) {
-      this.#createTrolleyAxesToMatchPoses(renderable, poseArrayMessage, topic);
-      for (let i = 0; i < poseArrayMessage.poses.length; i++) {
-        setObjectPoseTrolley(
-          renderable.userData.trolley_axes[i]!,
-          poseArrayMessage.poses[i]!,
-          renderable.userData.trolley_length,
-          renderable.userData.trolley_angles[i]!,
-          renderable.userData.robot_angles[i]!,
-        );
-      }
-    }
-
     // Update the pose for each pose renderable
     switch (settings.type) {
       case "axis":
@@ -694,23 +491,6 @@ export class PoseArrays extends SceneExtension<PoseArrayRenderable> {
       }
     }
   }
-}
-
-function setObjectPoseTrolley(
-  object: THREE.Object3D,
-  pose: Pose,
-  trolley_length: number,
-  trolley_angle: number,
-  robot_angle: number,
-): void {
-  const p = pose.position;
-  object.position.set(p.x, p.y, p.z);
-
-  object.quaternion.setFromAxisAngle(new THREE.Vector3(0, 0, 1), robot_angle + trolley_angle);
-
-  object.translateX(-1 * trolley_length);
-
-  object.updateMatrix();
 }
 
 function getDefaultType(topic: Topic | undefined): DisplayType {
@@ -756,7 +536,7 @@ function createLineStripMarker(
   };
 }
 
-export function normalizePoseArray(poseArray: PartialMessage<PoseArray>): PoseArray {
+function normalizePoseArray(poseArray: PartialMessage<PoseArray>): PoseArray {
   return {
     header: normalizeHeader(poseArray.header),
     poses: poseArray.poses?.map((p) => normalizePose(p)) ?? [],
@@ -787,7 +567,7 @@ function validateNavPath(messageEvent: PartialMessageEvent<NavPath>, renderer: I
         renderer.settings.errors.addToTopic(
           topic,
           MISMATCHED_FRAME_ID,
-          `Path frame does not match frames of all poses. "${baseFrameId}" != "${curFrameId}"`,
+          `Path poses must all have the same frame_id. "${baseFrameId}" != "${curFrameId}"`,
         );
         return false;
       }

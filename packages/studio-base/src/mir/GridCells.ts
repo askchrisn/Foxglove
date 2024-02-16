@@ -1,3 +1,7 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/
+
 import * as _ from "lodash-es";
 import * as THREE from "three";
 
@@ -14,21 +18,21 @@ import {
   RenderObjectHistory,
   PointsRenderable,
 } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/pointExtensionUtils";
+import { Point } from "@foxglove/studio-base/panels/ThreeDeeRender/ros";
 import type { RosObject, RosValue } from "@foxglove/studio-base/players/types";
 
-import { colorHasTransparency, getColorConverter, colorFieldComputedPrefix } from "../panels/ThreeDeeRender/renderables/colorMode";
-import type { AnyRendererSubscription, IRenderer } from "../panels/ThreeDeeRender/IRenderer";
-import { BaseUserData, Renderable } from "../panels/ThreeDeeRender/Renderable";
-import { PartialMessage, PartialMessageEvent, SceneExtension } from "../panels/ThreeDeeRender/SceneExtension";
-import { SettingsTreeEntry } from "../panels/ThreeDeeRender/SettingsManager";
-import { normalizeHeader } from "../panels/ThreeDeeRender/normalizeMessages";
 import {
   GridCell,
   GRID_CELLS_DATATYPES,
   CostmapData,
   MIR_COST_MAP_DATATYPE,
 } from "./ros";
-import { POINTCLOUD_DATATYPES, Point } from "@foxglove/studio-base/panels/ThreeDeeRender/ros";
+import type { AnyRendererSubscription, IRenderer } from "../panels/ThreeDeeRender/IRenderer";
+import { BaseUserData, Renderable } from "../panels/ThreeDeeRender/Renderable";
+import { PartialMessage, PartialMessageEvent, SceneExtension } from "../panels/ThreeDeeRender/SceneExtension";
+import { SettingsTreeEntry } from "../panels/ThreeDeeRender/SettingsManager";
+import { normalizeHeader } from "../panels/ThreeDeeRender/normalizeMessages";
+import { colorHasTransparency, getColorConverter, colorFieldComputedPrefix } from "../panels/ThreeDeeRender/renderables/colorMode";
 import { makePose } from "../panels/ThreeDeeRender/transforms";
 
 type LayerSettingsPointClouds = LayerSettingsPointExtension & {
@@ -209,7 +213,7 @@ export class GridCellHistoryRenderable extends Renderable<GridCellHistoryUserDat
     // Update position attribute
     if (GridCell && GridCell.cells) {
       for (let i = 0; i < GridCell.cells.length; i++) {
-          positionAttribute.setXYZ(i, GridCell?.cells[i]?.x ?? 0, GridCell?.cells[i]?.y ?? 0, GridCell?.cells[i]?.z ?? 0);
+          positionAttribute.setXYZ(i, GridCell.cells[i]?.x ?? 0, GridCell.cells[i]?.y ?? 0, GridCell.cells[i]?.z ?? 0);
       }
     }
 
@@ -460,13 +464,13 @@ export class GridCells extends SceneExtension<GridCellHistoryRenderable> {
       renderable = new GridCellHistoryRenderable(topic, this.renderer, {
         receiveTime,
         messageTime,
-        frameId: frameId,
+        frameId,
         pose: makePose(),
         settingsPath: ["topics", topic],
         settings,
         topic,
-        gridCell: gridCell,
-        latestOriginalMessage: latestOriginalMessage,
+        gridCell,
+        latestOriginalMessage,
         material,
         pickingMaterial,
         instancePickingMaterial,
@@ -517,13 +521,13 @@ export class GridCells extends SceneExtension<GridCellHistoryRenderable> {
       renderable = new GridCellHistoryRenderable(topic, this.renderer, {
         receiveTime,
         messageTime,
-        frameId: frameId,
+        frameId,
         pose: makePose(),
         settingsPath: ["topics", topic],
         settings,
         topic,
         gridCell: costmap_data,
-        latestOriginalMessage: latestOriginalMessage,
+        latestOriginalMessage,
         material,
         pickingMaterial,
         instancePickingMaterial,

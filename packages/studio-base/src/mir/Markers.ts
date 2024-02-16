@@ -1,15 +1,17 @@
-import { SettingsTreeAction, Topic } from "@foxglove/studio";
-import { MIR_NAVIGATION_MAP, MIR_NAVIGATION_MAP_DATATYPES, MIR_ZONE, MIR_ZONE_ACTION, MirZoneActionType } from "@foxglove/studio-base/mir/ros";
-import { TopicMarkers } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/TopicMarkers";
-import { MarkersNamespace } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/TopicMarkers";
-import { SettingsTreeEntry, SettingsTreeNodeWithActionHandler } from "@foxglove/studio-base/panels/ThreeDeeRender/SettingsManager";
-import { ColorRGBA, Marker, MarkerType, Point } from "@foxglove/studio-base/panels/ThreeDeeRender/ros";
-import { toNanoSec } from "@foxglove/rostime/dist/timeUtils";
-import { PartialMessage, PartialMessageEvent } from "@foxglove/studio-base/panels/ThreeDeeRender/SceneExtension";
-import { Header } from "@foxglove/studio-base/types/Messages";
-import { normalizeColorRGBA, normalizeColorRGBAs, normalizeHeader, normalizePose, normalizeTime, normalizeVector3, normalizeVector3s } from "@foxglove/studio-base/panels/ThreeDeeRender/normalizeMessages";
-import { Pose } from "@foxglove/studio-base/panels/ThreeDeeRender/transforms/geometry";
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/
+
 import earcut from "earcut";
+
+import { toNanoSec } from "@foxglove/rostime/dist/timeUtils";
+import { MIR_NAVIGATION_MAP, MIR_ZONE, MIR_ZONE_ACTION, MirZoneActionType } from "@foxglove/studio-base/mir/ros";
+import { PartialMessage, PartialMessageEvent } from "@foxglove/studio-base/panels/ThreeDeeRender/SceneExtension";
+import { normalizeColorRGBA, normalizeColorRGBAs, normalizeHeader, normalizePose, normalizeTime, normalizeVector3, normalizeVector3s } from "@foxglove/studio-base/panels/ThreeDeeRender/normalizeMessages";
+import { ColorRGBA, Marker, MarkerType, Point } from "@foxglove/studio-base/panels/ThreeDeeRender/ros";
+import { Pose } from "@foxglove/studio-base/panels/ThreeDeeRender/transforms/geometry";
+import { Header } from "@foxglove/studio-base/types/Messages";
+
 
 export function handleMirNavigationMap(messageEvent: PartialMessageEvent<MIR_NAVIGATION_MAP>,
   addMarker: (topic: string, marker: Marker, receiveTime: bigint) => void): void {
@@ -18,9 +20,9 @@ export function handleMirNavigationMap(messageEvent: PartialMessageEvent<MIR_NAV
   const receiveTime = toNanoSec(messageEvent.receiveTime);
 
   for (const zonesMsg of navMap.zones ?? []) {
-    const marker = normalizeMirZone(zonesMsg as  PartialMessage<MIR_ZONE>, navMap.header);
+    const marker = normalizeMirZone(zonesMsg!, navMap.header);
     addMarker(topic, marker, receiveTime);
-    const text_marker = normalizeMirZoneText(zonesMsg as PartialMessage<MIR_ZONE>, navMap.header);
+    const text_marker = normalizeMirZoneText(zonesMsg!, navMap.header);
     addMarker(topic, text_marker, receiveTime);
   }
 };
@@ -32,7 +34,7 @@ function normalizeMirZone(
   zone.polygon?.push({ x: zone.polygon[0]?.x, y: zone.polygon[0]?.y, z: zone.polygon[0]?.z });
   return {
     header: normalizeHeader(header),
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/restrict-plus-operands
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     ns: getMirNameSpace(zone.actions) + zone.name ?? "",
     id: 0,
     type: MarkerType.TRIANGLE_LIST,
@@ -60,7 +62,7 @@ function normalizeMirZoneText(
   zone.polygon?.push({ x: zone.polygon[0]?.x, y: zone.polygon[0]?.y, z: zone.polygon[0]?.z });
   return {
     header: normalizeHeader(header),
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, @typescript-eslint/restrict-plus-operands
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     ns: getMirNameSpace(zone.actions) + zone.name + " text" ?? "",
     id: 0,
     type: 9,

@@ -1,9 +1,15 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/
+
+import * as THREE from "three";
+
 import { MirTrajectoryPath, MirRobotStatePath, MirRobotState, MirTrajectoryPoint } from "@foxglove/studio-base/mir/ros";
 import { PartialMessage } from "@foxglove/studio-base/panels/ThreeDeeRender/SceneExtension";
 import { normalizeHeader, normalizePose } from "@foxglove/studio-base/panels/ThreeDeeRender/normalizeMessages";
 import { PoseArray } from "@foxglove/studio-base/panels/ThreeDeeRender/ros";
 import { Pose } from "@foxglove/studio-base/panels/ThreeDeeRender/transforms";
-import * as THREE from "three";
+
 
 export function normalizeMirPoseArray(
   poseArray: PartialMessage<MirRobotStatePath> | undefined,

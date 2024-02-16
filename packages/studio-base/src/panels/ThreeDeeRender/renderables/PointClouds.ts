@@ -8,6 +8,8 @@ import * as THREE from "three";
 import { Time, toNanoSec } from "@foxglove/rostime";
 import { NumericType, PackedElementField, PointCloud } from "@foxglove/schemas";
 import { SettingsTreeAction, MessageEvent } from "@foxglove/studio";
+import { handleMirPointCloud } from "@foxglove/studio-base/mir/PointClouds";
+import { MIR_OBSTACLE_CLOUD } from "@foxglove/studio-base/mir/ros";
 import { DynamicBufferGeometry } from "@foxglove/studio-base/panels/ThreeDeeRender/DynamicBufferGeometry";
 import {
   createGeometry,
@@ -51,8 +53,6 @@ import {
 } from "../ros";
 import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
 import { makePose, Pose } from "../transforms";
-import { MIR_OBSTACLE_CLOUD } from "@foxglove/studio-base/mir/ros";
-import { handleMirPointCloud } from "@foxglove/studio-base/mir/PointClouds";
 
 type PointCloudFieldReaders = {
   xReader: FieldReader;
@@ -749,7 +749,7 @@ export class PointClouds extends SceneExtension<PointCloudHistoryRenderable> {
         type: "schema",
         schemaNames: MIR_OBSTACLE_CLOUD,
         subscription: {
-          handler: (message: any) => handleMirPointCloud(message, this.#handleRosPointCloud.bind(this)),
+          handler: (message: any) => { handleMirPointCloud(message, this.#handleRosPointCloud.bind(this)); },
           filterQueue: this.#processMessageQueue.bind(this),
         },
       }

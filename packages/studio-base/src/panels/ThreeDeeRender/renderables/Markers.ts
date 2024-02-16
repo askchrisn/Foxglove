@@ -7,6 +7,8 @@ import * as _ from "lodash-es";
 
 import { toNanoSec } from "@foxglove/rostime";
 import { SettingsTreeAction } from "@foxglove/studio";
+import { handleMirNavigationMap } from "@foxglove/studio-base/mir/Markers";
+import { MIR_NAVIGATION_MAP_DATATYPES } from "@foxglove/studio-base/mir/ros";
 
 import { LayerSettingsMarker, LayerSettingsMarkerNamespace, TopicMarkers } from "./TopicMarkers";
 import type { AnyRendererSubscription, IRenderer } from "../IRenderer";
@@ -25,8 +27,6 @@ import {
 import { Marker, MarkerArray, MARKER_ARRAY_DATATYPES, MARKER_DATATYPES } from "../ros";
 import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
 import { makePose } from "../transforms";
-import { handleMirNavigationMap } from "@foxglove/studio-base/mir/Markers";
-import { MIR_NAVIGATION_MAP_DATATYPES } from "@foxglove/studio-base/mir/ros";
 
 const DEFAULT_SETTINGS: LayerSettingsMarker = {
   visible: false,
@@ -56,7 +56,7 @@ export class Markers extends SceneExtension<TopicMarkers> {
       {
         type: "schema",
         schemaNames: MIR_NAVIGATION_MAP_DATATYPES,
-        subscription: { handler: (message: any) => handleMirNavigationMap(message, this.#addMarker.bind(this)) },
+        subscription: { handler: (message: any) => { handleMirNavigationMap(message, this.#addMarker.bind(this)); } },
       }
     ];
   }
