@@ -18,20 +18,16 @@ import {
   onlyLastByTopicMessage,
 } from "../SceneExtension";
 import { SettingsTreeEntry } from "../SettingsManager";
-import { rgbaToCssString, SRGBToLinear, stringToRgba } from "../color";
 import {
   normalizeHeader,
   normalizePose,
   normalizeInt8Array,
   normalizeTime,
 } from "../normalizeMessages";
-import { ColorRGBA, OccupancyGrid, OCCUPANCY_GRID_DATATYPES } from "../ros";
+import { OccupancyGrid, OCCUPANCY_GRID_DATATYPES } from "../ros";
 import { BaseSettings } from "../settings";
 import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
 import PNG from "png-ts";
-
-
-type ColorModes = "custom" | "costmap" | "map" | "raw";
 
 export type LayerSettingsOccupancyGrid = BaseSettings & {
   frameLocked: boolean;
@@ -607,9 +603,9 @@ function normalizeOccupancyGrid(message: PartialMessage<OccupancyGrid>): Occupan
   };
 }
 
-let costmapPalette: [number, number, number, number][] | undefined;
-let mapPalette: [number, number, number, number][] | undefined;
-let rawPalette: [number, number, number, number][] | undefined;
+// let costmapPalette: [number, number, number, number][] | undefined;
+// let mapPalette: [number, number, number, number][] | undefined;
+// let rawPalette: [number, number, number, number][] | undefined;
 
 /**
  * Maps the value to a color using the given palette that is cached after initial use.
@@ -667,75 +663,75 @@ let rawPalette: [number, number, number, number][] | undefined;
 
 // Based off of rviz map implementation
 // https://github.com/ros-visualization/rviz/blob/1f622b8c95b8e188841b5505db2f97394d3e9c6c/src/rviz/default_plugin/map_display.cpp#L284
-function createMapPalette() {
-  let index = 0;
-  const palette = new Array(256).fill([0, 0, 0, 0]);
+// function createMapPalette() {
+//   let index = 0;
+//   const palette = new Array(256).fill([0, 0, 0, 0]);
 
-  // Standard gray map palette values
-  for (let i = 0; i <= 100; i++) {
-    const v = Math.trunc(255 - (255 * i) / 100);
-    palette[index++] = [v, v, v, 255];
-  }
+//   // Standard gray map palette values
+//   for (let i = 0; i <= 100; i++) {
+//     const v = Math.trunc(255 - (255 * i) / 100);
+//     palette[index++] = [v, v, v, 255];
+//   }
 
-  // illegal positive values in green
-  for (let i = 101; i <= 127; i++) {
-    palette[index++] = [0, 255, 0, 255];
-  }
+//   // illegal positive values in green
+//   for (let i = 101; i <= 127; i++) {
+//     palette[index++] = [0, 255, 0, 255];
+//   }
 
-  // illegal negative (char) values in shades of red/yellow
-  for (let i = 128; i <= 254; i++) {
-    palette[index++] = [255, Math.trunc((255 * (i - 128)) / (254 - 128)), 0, 255];
-  }
+//   // illegal negative (char) values in shades of red/yellow
+//   for (let i = 128; i <= 254; i++) {
+//     palette[index++] = [255, Math.trunc((255 * (i - 128)) / (254 - 128)), 0, 255];
+//   }
 
-  // legal -1 value is tasteful blueish greenish grayish color
-  palette[index++] = [112, 137, 134, 255];
-  return palette;
-}
+//   // legal -1 value is tasteful blueish greenish grayish color
+//   palette[index++] = [112, 137, 134, 255];
+//   return palette;
+// }
 
 // Based off of rviz costmap implementation
 // https://github.com/ros-visualization/rviz/blob/1f622b8c95b8e188841b5505db2f97394d3e9c6c/src/rviz/default_plugin/map_display.cpp#L322
-function createCostmapPalette() {
-  let index = 0;
-  const palette = new Array(256).fill([0, 0, 0, 0]);
-  // zero values have alpha=0
-  palette[index++] = [0, 0, 0, 0];
+// function createCostmapPalette() {
+//   let index = 0;
+//   const palette = new Array(256).fill([0, 0, 0, 0]);
+//   // zero values have alpha=0
+//   palette[index++] = [0, 0, 0, 0];
 
-  // Blue to red spectrum for most normal cost values
-  for (let i = 1; i <= 98; i++) {
-    const v = Math.trunc((255 * i) / 100);
-    palette[index++] = [v, 0, 255 - v, 255];
-  }
-  // inscribed obstacle values (99) in cyan
-  palette[index++] = [0, 255, 255, 255];
+//   // Blue to red spectrum for most normal cost values
+//   for (let i = 1; i <= 98; i++) {
+//     const v = Math.trunc((255 * i) / 100);
+//     palette[index++] = [v, 0, 255 - v, 255];
+//   }
+//   // inscribed obstacle values (99) in cyan
+//   palette[index++] = [0, 255, 255, 255];
 
-  // lethal obstacle values (100) in purple
-  palette[index++] = [255, 0, 255, 255];
+//   // lethal obstacle values (100) in purple
+//   palette[index++] = [255, 0, 255, 255];
 
-  // illegal positive values in green
-  for (let i = 101; i <= 127; i++) {
-    palette[index++] = [0, 255, 0, 255];
-  }
+//   // illegal positive values in green
+//   for (let i = 101; i <= 127; i++) {
+//     palette[index++] = [0, 255, 0, 255];
+//   }
 
-  // illegal negative (char) values in shades of red/yellow
-  for (let i = 128; i <= 254; i++) {
-    palette[index++] = [255, Math.trunc((255 * (i - 128)) / (254 - 128)), 0, 255];
-  }
+//   // illegal negative (char) values in shades of red/yellow
+//   for (let i = 128; i <= 254; i++) {
+//     palette[index++] = [255, Math.trunc((255 * (i - 128)) / (254 - 128)), 0, 255];
+//   }
 
-  // legal -1 value is tasteful blueish greenish grayish color
-  palette[index++] = [112, 137, 134, 255];
-  return palette;
-}
+//   // legal -1 value is tasteful blueish greenish grayish color
+//   palette[index++] = [112, 137, 134, 255];
+//   return palette;
+// }
 
 // Based off of rviz raw implementation
 // https://github.com/ros-visualization/rviz/blob/1f622b8c95b8e188841b5505db2f97394d3e9c6c/src/rviz/default_plugin/map_display.cpp#L377
-function createRawPalette() {
-  let index = 0;
-  const palette = new Array(256).fill([0, 0, 0, 0]);
+// function createRawPalette() {
+//   let index = 0;
+//   const palette = new Array(256).fill([0, 0, 0, 0]);
 
-  // Standard gray map palette values
-  for (let i = 0; i < 256; i++) {
-    palette[index++] = [i, i, i, 255];
-  }
+//   // Standard gray map palette values
+//   for (let i = 0; i < 256; i++) {
+//     palette[index++] = [i, i, i, 255];
+//   }
 
-  return palette;
-}
+//   return palette;
+// }

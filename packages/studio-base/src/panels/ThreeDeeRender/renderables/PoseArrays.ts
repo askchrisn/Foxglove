@@ -46,7 +46,7 @@ import {
 } from "../settings";
 import { topicIsConvertibleToSchema } from "../topicIsConvertibleToSchema";
 import { makePose, Pose } from "../transforms";
-import { MIR_ROBOT_STATE_PATH_DATATYPES, MIR_TRAJECTORY_PATH_DATATYPES, MirRobotState, MirRobotStatePath, MirTrajectoryPath, MirTrajectoryPoint } from "@foxglove/studio-base/mir/ros";
+import { MIR_ROBOT_STATE_PATH_DATATYPES, MIR_TRAJECTORY_PATH_DATATYPES, MirRobotStatePath, MirTrajectoryPath } from "@foxglove/studio-base/mir/ros";
 import { normalizeMirPoseArray, normalizeMirTrajecoryArray } from "@foxglove/studio-base/mir/PoseArrays";
 
 type GradientRgba = [ColorRGBA, ColorRGBA];

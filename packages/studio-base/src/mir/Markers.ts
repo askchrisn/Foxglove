@@ -1,8 +1,4 @@
-import { SettingsTreeAction, Topic } from "@foxglove/studio";
-import { MIR_NAVIGATION_MAP, MIR_NAVIGATION_MAP_DATATYPES, MIR_ZONE, MIR_ZONE_ACTION, MirZoneActionType } from "@foxglove/studio-base/mir/ros";
-import { TopicMarkers } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/TopicMarkers";
-import { MarkersNamespace } from "@foxglove/studio-base/panels/ThreeDeeRender/renderables/TopicMarkers";
-import { SettingsTreeEntry, SettingsTreeNodeWithActionHandler } from "@foxglove/studio-base/panels/ThreeDeeRender/SettingsManager";
+import { MIR_NAVIGATION_MAP, MIR_ZONE, MIR_ZONE_ACTION, MirZoneActionType } from "@foxglove/studio-base/mir/ros";
 import { ColorRGBA, Marker, MarkerType, Point } from "@foxglove/studio-base/panels/ThreeDeeRender/ros";
 import { toNanoSec } from "@foxglove/rostime/dist/timeUtils";
 import { PartialMessage, PartialMessageEvent } from "@foxglove/studio-base/panels/ThreeDeeRender/SceneExtension";

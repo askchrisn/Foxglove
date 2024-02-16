@@ -1,5 +1,5 @@
 import { MirObstacleCloud } from "@foxglove/studio-base/mir/ros";
-import { PartialMessage, PartialMessageEvent } from "@foxglove/studio-base/panels/ThreeDeeRender/SceneExtension";
+import { PartialMessageEvent } from "@foxglove/studio-base/panels/ThreeDeeRender/SceneExtension";
 import { PointCloud2 } from "@foxglove/studio-base/panels/ThreeDeeRender/ros";
 
 export function handleMirPointCloud(
