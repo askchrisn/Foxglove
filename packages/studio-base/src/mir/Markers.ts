@@ -11,49 +11,6 @@ import { normalizeColorRGBA, normalizeColorRGBAs, normalizeHeader, normalizePose
 import { Pose } from "@foxglove/studio-base/panels/ThreeDeeRender/transforms/geometry";
 import earcut from "earcut";
 
-// // used in
-// // File: packages\studio-base\src\panels\ThreeDeeRender\renderables\Markers.ts
-// // Method: settingsNodes()
-// export function handleMirSettings(
-//   topic: Topic,
-//   renderables: Map<string, TopicMarkers>,
-//   defaultSettingIsVisible: boolean,
-//   handleSettingsActionNamespace: (action: SettingsTreeAction) => void): SettingsTreeEntry
-// {
-//   const node: SettingsTreeNodeWithActionHandler = {
-//     label: topic.name,
-//     icon: "Shapes",
-//     order: topic.name.toLocaleLowerCase(),
-//     fields: {},
-//     visible: defaultSettingIsVisible,
-//     handler: handleSettingsActionNamespace,
-//   };
-
-//   // Create a list of all the namespaces for this topic
-//   const topicMarkers: TopicMarkers | undefined = renderables.get(topic.name);
-//   const namespaces: MarkersNamespace[] = Array.from(topicMarkers?.namespaces.values() ?? []).sort((a, b) =>
-//     a.namespace.localeCompare(b.namespace),
-//   );
-//   if (namespaces.length > 1 || (namespaces.length === 1 && namespaces[0]!.namespace !== "")) {
-//     node.children = {};
-//     for (const ns of namespaces) {
-//       const child: SettingsTreeNodeWithActionHandler = {
-//         label: ns.namespace !== "" ? ns.namespace : `""`,
-//         icon: "Shapes",
-//         visible: ns.settings.visible,
-//         defaultExpansionState: namespaces.length > 1 ? "collapsed" : "expanded",
-//         handler: handleSettingsActionNamespace,
-//       };
-//       node.children[`ns:${ns.namespace}`] = child;
-//     }
-//   }
-
-//   return { path: ["topics", topic.name], node };
-// }
-
-// used in
-// File: packages\studio-base\src\panels\ThreeDeeRender\renderables\Markers.ts
-// Method: getSubscriptions()
 export function handleMirNavigationMap(messageEvent: PartialMessageEvent<MIR_NAVIGATION_MAP>,
   addMarker: (topic: string, marker: Marker, receiveTime: bigint) => void): void {
   const topic = messageEvent.topic;
