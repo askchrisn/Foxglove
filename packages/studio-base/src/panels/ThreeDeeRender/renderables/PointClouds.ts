@@ -8,6 +8,8 @@ import * as THREE from "three";
 import { Time, toNanoSec } from "@foxglove/rostime";
 import { NumericType, PackedElementField, PointCloud } from "@foxglove/schemas";
 import { SettingsTreeAction, MessageEvent } from "@foxglove/studio";
+import { handleMirPointCloud } from "@foxglove/studio-base/mir/PointClouds";
+import { MIR_OBSTACLE_CLOUD } from "@foxglove/studio-base/mir/ros";
 import { DynamicBufferGeometry } from "@foxglove/studio-base/panels/ThreeDeeRender/DynamicBufferGeometry";
 import {
   createGeometry,
@@ -90,6 +92,7 @@ const NEEDS_MIN_MAX = ["gradient", "colormap"];
 const ALL_POINTCLOUD_DATATYPES = new Set<string>([
   ...FOXGLOVE_POINTCLOUD_DATATYPES,
   ...ROS_POINTCLOUD_DATATYPES,
+  ...MIR_OBSTACLE_CLOUD
 ]);
 
 const INVALID_POINTCLOUD = "INVALID_POINTCLOUD";
@@ -742,6 +745,14 @@ export class PointClouds extends SceneExtension<PointCloudHistoryRenderable> {
           filterQueue: this.#processMessageQueue.bind(this),
         },
       },
+      {
+        type: "schema",
+        schemaNames: MIR_OBSTACLE_CLOUD,
+        subscription: {
+          handler: (message: any) => { handleMirPointCloud(message, this.#handleRosPointCloud.bind(this)); },
+          filterQueue: this.#processMessageQueue.bind(this),
+        },
+      }
     ];
   }
 
