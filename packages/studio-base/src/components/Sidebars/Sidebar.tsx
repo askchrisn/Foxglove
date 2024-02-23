@@ -112,7 +112,7 @@ export function Sidebar<K extends string>({
       data-tourid={`sidebar-${anchor}`}
     >
       <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Tabs
+        {/* <Tabs
           className={classes.tabs}
           textColor="inherit"
           value={activeTab ?? false}
@@ -143,16 +143,16 @@ export function Sidebar<K extends string>({
               data-testid={`${key}-${anchor}`}
             />
           ))}
-        </Tabs>
+        </Tabs> */}
 
-        <IconButton
+        {/* <IconButton
           className={classes.iconButton}
           onClick={onClose}
           size="small"
           data-testid={`sidebar-close-${anchor}`}
         >
           <CloseIcon fontSize="inherit" />
-        </IconButton>
+        </IconButton> */}
       </Stack>
       <Divider />
       {activeTab != undefined && (
