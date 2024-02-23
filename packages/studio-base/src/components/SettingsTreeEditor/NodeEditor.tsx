@@ -495,9 +495,9 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
             );
           })}
 
-          {menuActions.length > 0 && (
+          {/* {menuActions.length > 0 && (
             <NodeActionsMenu actions={menuActions} onSelectAction={handleNodeAction} />
-          )}
+          )} */}
         </Stack>
       </div>
       {/* Removes the ability to edit properties of topics */}
