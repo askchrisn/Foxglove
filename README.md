@@ -1,8 +1,15 @@
 # MiR Development
 
-## Important Notes
-- To update main, please
 Currently main is based on Foxglove release/v1.86.1
+
+## Repos/Branches Explained
+- main is the most up to date MiR Foxglove product
+- Foxglove-main is the most up to date open-sourced foxglove repo/project
+
+To update main from the latest foxglove
+1. Make a new branch called mirRelease-X based off of main
+2. Pull latest on Foxglove-main
+3. Merge Foxglove-main into main
 
 ## Todo
 Move the following files over from the original [MiR Project](https://git.mirdev.net/mir/mir_webviz)
