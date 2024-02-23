@@ -625,7 +625,7 @@ export default function Panel<
             isFullscreen: fullscreen,
             tabId,
             // disallow dragging the root panel in a layout
-            connectToolbarDragHandle: isTopLevelPanel ? undefined : connectToolbarDragHandle,
+            connectToolbarDragHandle: undefined,
             setMessagePathDropConfig,
           }}
         >
@@ -654,8 +654,8 @@ export default function Panel<
                   panelRootRef.current = el;
                   // disallow dragging the root panel in a layout
                   if (!isTopLevelPanel) {
-                    connectOverlayDragPreview(el);
-                    connectToolbarDragPreview(el);
+                    // connectOverlayDragPreview(el);
+                    // connectToolbarDragPreview(el);
                   }
                   connectMessagePathDropTarget(el);
                 }}
@@ -667,7 +667,7 @@ export default function Panel<
                       quickActionsOverlayRef.current = el;
                       // disallow dragging the root panel in a layout
                       if (!isTopLevelPanel) {
-                        connectOverlayDragSource(el);
+                        // connectOverlayDragSource(el);
                       }
                     }}
                   />
