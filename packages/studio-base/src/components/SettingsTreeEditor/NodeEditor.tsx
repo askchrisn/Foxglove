@@ -395,7 +395,8 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
           onClick={toggleOpen}
           data-testid={`settings__nodeHeaderToggle__${props.path.join("-")}`}
         >
-          {hasProperties && <ExpansionArrow expanded={state.open} />}
+          {/* Prevent arrow down for topics that dont have children because we removed ability to edit a topic's settings */}
+          {hasProperties && hasChildren && <ExpansionArrow expanded={state.open} />}
           {iconItem}
           {state.editing ? (
             <TextField
@@ -499,13 +500,14 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
           )}
         </Stack>
       </div>
-      {state.open && fieldEditors.length > 0 && (
+      {/* Removes the ability to edit properties of topics */}
+      {/* {state.open && fieldEditors.length > 0 && (
         <>
           <div className={classes.fieldPadding} />
           {fieldEditors}
           <div className={classes.fieldPadding} />
         </>
-      )}
+      )} */}
       {state.open && selectVisibilityFilterEnabled && hasChildren && (
         <>
           <Stack paddingBottom={0.5} style={{ gridColumn: "span 2" }} />

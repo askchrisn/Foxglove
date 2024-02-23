@@ -156,7 +156,7 @@ export default function PanelSettings({
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <Typography variant="subtitle2">{t("panelName", { title })}</Typography>
+                {/* <Typography variant="subtitle2">{t("panelName", { title })}</Typography>
                 <ActionMenu
                   key={1}
                   fontSize="small"
@@ -165,7 +165,7 @@ export default function PanelSettings({
                   onShare={() => {
                     setShowShareModal(true);
                   }}
-                />
+                /> */}
               </Stack>
               <Divider />
             </>

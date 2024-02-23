@@ -115,7 +115,7 @@ export default function SettingsTreeEditor({
 
   return (
     <Stack fullHeight>
-      {settings.enableFilter === true && (
+      {/* {settings.enableFilter === true && (
         <header className={classes.appBar}>
           <TextField
             id={`${variant}-settings-filter`}
@@ -152,9 +152,9 @@ export default function SettingsTreeEditor({
             }}
           />
         </header>
-      )}
+      )} */}
       <div className={classes.fieldGrid}>
-        {showTitleField && (
+        {/* {showTitleField && (
           <>
             <Stack paddingBottom={0.5} style={{ gridColumn: "span 2" }} />
             <FieldEditor
@@ -163,18 +163,20 @@ export default function SettingsTreeEditor({
               actionHandler={handleTitleChange}
             />
           </>
-        )}
-        {definedNodes.map(([key, root]) => (
-          <NodeEditor
-            key={key}
-            actionHandler={actionHandler}
-            defaultOpen={root.defaultExpansionState === "collapsed" ? false : true}
-            filter={filterText}
-            focusedPath={focusedPath}
-            path={makeStablePath(key)}
-            settings={root}
-          />
-        ))}
+        )} */}
+        {definedNodes
+          .filter(([key, root]) => root.label === "Topics")
+          .map(([key, root]) => (
+            <NodeEditor
+              key={key}
+              actionHandler={actionHandler}
+              defaultOpen={root.defaultExpansionState === "collapsed" ? false : true}
+              filter={filterText}
+              focusedPath={focusedPath}
+              path={makeStablePath(key)}
+              settings={root}
+            />
+          ))}
       </div>
     </Stack>
   );
