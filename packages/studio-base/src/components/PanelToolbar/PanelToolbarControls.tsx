@@ -66,12 +66,12 @@ const PanelToolbarControlsComponent = forwardRef<HTMLDivElement, PanelToolbarCon
     return (
       <Stack direction="row" alignItems="center" paddingLeft={1} ref={ref}>
         {additionalIcons}
-        {showSettingsButton && (
+        {showSettingsButton && panelInfo?.title == '3D' && (
           <ToolbarIconButton title="Settings" onClick={openSettings}>
             <SettingsIcon />
           </ToolbarIconButton>
         )}
-        <PanelActionsDropdown isUnknownPanel={isUnknownPanel} />
+        {/* <PanelActionsDropdown isUnknownPanel={isUnknownPanel} /> */}
       </Stack>
     );
   },
