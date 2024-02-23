@@ -307,7 +307,7 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
   const toggleOpen = useCallback(() => {
     setState((draft) => {
       if (!draft.editing) {
-        draft.open = !draft.open;
+        draft.open = props.path.length > 1 ? !draft.open : true;
       }
     });
   }, [setState]);
