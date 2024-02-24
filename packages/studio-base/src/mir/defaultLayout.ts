@@ -10,38 +10,6 @@ import { LayoutData } from "@foxglove/studio-base/context/CurrentLayoutContext/a
  */
 export const defaultLayout: LayoutData = {
   "configById": {
-    "DiagnosticStatusPanel!29l1m1b": {
-      "topicToRender": "/diagnostics",
-      "selectedHardwareId": "PowerBoard"
-    },
-    "Plot!42wyo6y": {
-      "title": "Some angular stuff",
-      "paths": [
-        {
-          "value": "/imu_data.orientation.z",
-          "enabled": true,
-          "timestampMethod": "receiveTime"
-        },
-        {
-          "value": "/cmd_vel.twist.angular.z",
-          "enabled": true,
-          "timestampMethod": "receiveTime"
-        },
-        {
-          "value": "/odom.twist.twist.angular.z",
-          "enabled": true,
-          "timestampMethod": "receiveTime"
-        }
-      ],
-      "showXAxisLabels": true,
-      "showYAxisLabels": true,
-      "showLegend": false,
-      "legendDisplay": "floating",
-      "showPlotValuesInLegend": false,
-      "isSynced": true,
-      "xAxisVal": "timestamp",
-      "sidebarDimension": 240
-    },
     "3D!18i6zy7": {
       "layers": {
         "845139cb-26bc-40b3-8161-8ab60af4baf5": {
@@ -70,13 +38,13 @@ export const defaultLayout: LayoutData = {
       },
       "cameraState": {
         "perspective": false,
-        "distance": 6.470670899427442,
+        "distance": 58.72652247359984,
         "phi": 72.76295469770004,
-        "thetaOffset": 5.852468599869201,
+        "thetaOffset": 5.852468599869225,
         "targetOffset": [
-          11.8371582814017,
-          17.233927045436467,
-          3.1859749172215375e-15
+          12.450242147703845,
+          29.376460834400792,
+          3.1876247736041716e-15
         ],
         "target": [
           0,
@@ -238,18 +206,19 @@ export const defaultLayout: LayoutData = {
         "poseEstimateXDeviation": 0.5,
         "poseEstimateYDeviation": 0.5,
         "poseEstimateThetaDeviation": 0.26179939
-      }
+      },
+      "imageMode": {}
     },
-    "DiagnosticSummary!3aq22na": {
+    "DiagnosticStatusPanel!29l1m1b": {
+      "topicToRender": "/diagnostics",
+      "selectedHardwareId": "PowerBoard"
+    },
+    "DiagnosticSummary!n2vqhl": {
       "minLevel": 1,
       "pinnedIds": [],
       "hardwareIdFilter": "",
       "topicToRender": "/diagnostics",
       "sortByLevel": true
-    },
-    "RosOut!8ppqb4": {
-      "searchTerms": [],
-      "minLogLevel": 3
     }
   },
   "globalVariables": {},
@@ -258,23 +227,13 @@ export const defaultLayout: LayoutData = {
     "speed": 1
   },
   "layout": {
-    "first": {
-      "first": {
-        "first": "DiagnosticStatusPanel!29l1m1b",
-        "second": "Plot!42wyo6y",
-        "direction": "column"
-      },
-      "second": "3D!18i6zy7",
-      "direction": "row",
-      "splitPercentage": 21.72066330514832
-    },
+    "first": "3D!18i6zy7",
     "second": {
-      "first": "DiagnosticSummary!3aq22na",
-      "second": "RosOut!8ppqb4",
-      "direction": "row",
-      "splitPercentage": 35.870382522716454
+      "first": "DiagnosticStatusPanel!29l1m1b",
+      "second": "DiagnosticSummary!n2vqhl",
+      "direction": "column"
     },
-    "direction": "column",
-    "splitPercentage": 73.19587042083084
+    "direction": "row",
+    "splitPercentage": 75.48148148148148
   }
 } as const;
