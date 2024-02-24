@@ -30,7 +30,7 @@ import Stack from "@foxglove/studio-base/components/Stack";
 import { useAppContext } from "@foxglove/studio-base/context/AppContext";
 
 import { FieldEditor } from "./FieldEditor";
-import { NodeActionsMenu } from "./NodeActionsMenu";
+/* import { NodeActionsMenu } from "./NodeActionsMenu"; */
 import { VisibilityToggle } from "./VisibilityToggle";
 import { icons } from "./icons";
 import { prepareSettingsNodes } from "./utils";
@@ -226,9 +226,9 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
     });
   };
 
-  const handleNodeAction = (actionId: string) => {
+/*   const handleNodeAction = (actionId: string) => {
     actionHandler({ action: "perform-node-action", payload: { id: actionId, path: props.path } });
-  };
+  }; */
 
   const isFocused = _.isEqual(focusedPath, props.path);
 
@@ -253,7 +253,7 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
 
   const rootRef = useRef<HTMLDivElement>(ReactNull);
 
-  const fieldEditors = filterMap(Object.entries(fields ?? {}), ([key, field]) => {
+/*   const fieldEditors = filterMap(Object.entries(fields ?? {}), ([key, field]) => {
     return field ? (
       <FieldEditor
         key={key}
@@ -262,7 +262,7 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
         actionHandler={actionHandler}
       />
     ) : undefined;
-  });
+  }); */
 
   const filterFn =
     state.visibilityFilter === "visible"
@@ -321,7 +321,7 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
     [toggleEditing],
   );
 
-  const [inlineActions, menuActions] = useMemo(
+  const [inlineActions, /* menuActions */] = useMemo(
     () =>
       _.partition(
         settings.actions,

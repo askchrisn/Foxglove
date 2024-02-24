@@ -2,8 +2,8 @@
 // License, v2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
-import CloseIcon from "@mui/icons-material/Close";
-import { Badge, BadgeProps, Divider, IconButton, Tab, Tabs } from "@mui/material";
+/* import CloseIcon from "@mui/icons-material/Close"; */
+import { /* Badge, */ BadgeProps, Divider, /* IconButton, Tab, Tabs */ } from "@mui/material";
 import { makeStyles } from "tss-react/mui";
 
 import Stack from "@foxglove/studio-base/components/Stack";
@@ -87,9 +87,9 @@ function Noop(): ReactNull {
 export function Sidebar<K extends string>({
   items,
   anchor,
-  onClose,
+/*   onClose, */
   activeTab,
-  setActiveTab,
+/*   setActiveTab, */
 }: {
   items: Map<K, SidebarItem>;
   anchor: "right" | "left";

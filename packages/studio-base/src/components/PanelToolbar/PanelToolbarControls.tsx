@@ -25,7 +25,7 @@ import {
 } from "@foxglove/studio-base/context/PanelStateContext";
 import { useWorkspaceActions } from "@foxglove/studio-base/context/Workspace/useWorkspaceActions";
 
-import { PanelActionsDropdown } from "./PanelActionsDropdown";
+/* import { PanelActionsDropdown } from "./PanelActionsDropdown"; */
 
 type PanelToolbarControlsProps = {
   additionalIcons?: React.ReactNode;
@@ -34,7 +34,7 @@ type PanelToolbarControlsProps = {
 
 const PanelToolbarControlsComponent = forwardRef<HTMLDivElement, PanelToolbarControlsProps>(
   (props, ref) => {
-    const { additionalIcons, isUnknownPanel } = props;
+    const { additionalIcons, /* isUnknownPanel */ } = props;
     const { id: panelId, type: panelType } = useContext(PanelContext) ?? {};
     const panelCatalog = useContext(PanelCatalogContext);
     const { setSelectedPanelIds } = useSelectedPanels();
