@@ -16,6 +16,7 @@ type Props = PropsWithChildren<{
 const useStyles = makeStyles()((theme) => {
   return {
     root: {
+      display: "none",
       gridArea: "appbar",
       boxShadow: "none",
       backgroundColor: theme.palette.appBar.main,

@@ -30,7 +30,7 @@ import Stack from "@foxglove/studio-base/components/Stack";
 import { useAppContext } from "@foxglove/studio-base/context/AppContext";
 
 import { FieldEditor } from "./FieldEditor";
-import { NodeActionsMenu } from "./NodeActionsMenu";
+/* import { NodeActionsMenu } from "./NodeActionsMenu"; */
 import { VisibilityToggle } from "./VisibilityToggle";
 import { icons } from "./icons";
 import { prepareSettingsNodes } from "./utils";
@@ -226,9 +226,9 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
     });
   };
 
-  const handleNodeAction = (actionId: string) => {
+/*   const handleNodeAction = (actionId: string) => {
     actionHandler({ action: "perform-node-action", payload: { id: actionId, path: props.path } });
-  };
+  }; */
 
   const isFocused = _.isEqual(focusedPath, props.path);
 
@@ -253,7 +253,7 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
 
   const rootRef = useRef<HTMLDivElement>(ReactNull);
 
-  const fieldEditors = filterMap(Object.entries(fields ?? {}), ([key, field]) => {
+/*   const fieldEditors = filterMap(Object.entries(fields ?? {}), ([key, field]) => {
     return field ? (
       <FieldEditor
         key={key}
@@ -262,7 +262,7 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
         actionHandler={actionHandler}
       />
     ) : undefined;
-  });
+  }); */
 
   const filterFn =
     state.visibilityFilter === "visible"
@@ -307,7 +307,7 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
   const toggleOpen = useCallback(() => {
     setState((draft) => {
       if (!draft.editing) {
-        draft.open = !draft.open;
+        draft.open = props.path.length > 1 ? !draft.open : true;
       }
     });
   }, [setState]);
@@ -321,7 +321,7 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
     [toggleEditing],
   );
 
-  const [inlineActions, menuActions] = useMemo(
+  const [inlineActions, /* menuActions */] = useMemo(
     () =>
       _.partition(
         settings.actions,
@@ -395,7 +395,8 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
           onClick={toggleOpen}
           data-testid={`settings__nodeHeaderToggle__${props.path.join("-")}`}
         >
-          {hasProperties && <ExpansionArrow expanded={state.open} />}
+          {/* Prevent arrow down for topics that dont have children because we removed ability to edit a topic's settings */}
+          {hasProperties && hasChildren && <ExpansionArrow expanded={state.open} />}
           {iconItem}
           {state.editing ? (
             <TextField
@@ -494,18 +495,19 @@ function NodeEditorComponent(props: NodeEditorProps): JSX.Element {
             );
           })}
 
-          {menuActions.length > 0 && (
+          {/* {menuActions.length > 0 && (
             <NodeActionsMenu actions={menuActions} onSelectAction={handleNodeAction} />
-          )}
+          )} */}
         </Stack>
       </div>
-      {state.open && fieldEditors.length > 0 && (
+      {/* Removes the ability to edit properties of topics */}
+      {/* {state.open && fieldEditors.length > 0 && (
         <>
           <div className={classes.fieldPadding} />
           {fieldEditors}
           <div className={classes.fieldPadding} />
         </>
-      )}
+      )} */}
       {state.open && selectVisibilityFilterEnabled && hasChildren && (
         <>
           <Stack paddingBottom={0.5} style={{ gridColumn: "span 2" }} />

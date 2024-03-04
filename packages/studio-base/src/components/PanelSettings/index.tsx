@@ -3,14 +3,14 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 import { Divider, Typography } from "@mui/material";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { /* useCallback,  */useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useUnmount } from "react-use";
 
 import { SettingsTree } from "@foxglove/studio";
 import { useConfigById } from "@foxglove/studio-base/PanelAPI";
 import EmptyState from "@foxglove/studio-base/components/EmptyState";
-import { ActionMenu } from "@foxglove/studio-base/components/PanelSettings/ActionMenu";
+/* import { ActionMenu } from "@foxglove/studio-base/components/PanelSettings/ActionMenu"; */
 import SettingsTreeEditor from "@foxglove/studio-base/components/SettingsTreeEditor";
 import { ShareJsonModal } from "@foxglove/studio-base/components/ShareJsonModal";
 import Stack from "@foxglove/studio-base/components/Stack";
@@ -26,7 +26,7 @@ import {
   usePanelStateStore,
 } from "@foxglove/studio-base/context/PanelStateContext";
 import { PanelConfig } from "@foxglove/studio-base/types/panels";
-import { TAB_PANEL_TYPE } from "@foxglove/studio-base/util/globalConstants";
+/* import { TAB_PANEL_TYPE } from "@foxglove/studio-base/util/globalConstants"; */
 import { getPanelTypeFromId } from "@foxglove/studio-base/util/layout";
 
 const singlePanelIdSelector = (state: LayoutState) =>
@@ -123,14 +123,14 @@ export default function PanelSettings({
     selectedPanelId ? state.settingsTrees[selectedPanelId] : undefined,
   );
 
-  const resetToDefaults = useCallback(() => {
+/*   const resetToDefaults = useCallback(() => {
     if (selectedPanelId) {
       savePanelConfigs({
         configs: [{ id: selectedPanelId, config: {}, override: true }],
       });
       incrementSequenceNumber(selectedPanelId);
     }
-  }, [incrementSequenceNumber, savePanelConfigs, selectedPanelId]);
+  }, [incrementSequenceNumber, savePanelConfigs, selectedPanelId]); */
 
   if (selectedPanelId == undefined) {
     return <EmptyState>{t("selectAPanelToEditItsSettings")}</EmptyState>;
@@ -141,7 +141,7 @@ export default function PanelSettings({
   }
 
   const showTitleField = panelInfo != undefined && panelInfo.hasCustomToolbar !== true;
-  const title = panelInfo?.title ?? t("unknown");
+/*   const title = panelInfo?.title ?? t("unknown"); */
 
   return (
     <Stack fullHeight flex="auto" gap={1}>
@@ -156,7 +156,7 @@ export default function PanelSettings({
                 alignItems="center"
                 justifyContent="space-between"
               >
-                <Typography variant="subtitle2">{t("panelName", { title })}</Typography>
+                {/* <Typography variant="subtitle2">{t("panelName", { title })}</Typography>
                 <ActionMenu
                   key={1}
                   fontSize="small"
@@ -165,7 +165,7 @@ export default function PanelSettings({
                   onShare={() => {
                     setShowShareModal(true);
                   }}
-                />
+                /> */}
               </Stack>
               <Divider />
             </>

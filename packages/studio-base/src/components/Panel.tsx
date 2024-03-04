@@ -59,7 +59,7 @@ import {
   useWorkspaceStore,
   WorkspaceStoreSelectors,
 } from "@foxglove/studio-base/context/Workspace/WorkspaceContext";
-import usePanelDrag from "@foxglove/studio-base/hooks/usePanelDrag";
+/* import usePanelDrag from "@foxglove/studio-base/hooks/usePanelDrag"; */
 import { useMessagePathDrop } from "@foxglove/studio-base/services/messagePathDragging";
 import { TabPanelConfig } from "@foxglove/studio-base/types/layouts";
 import { OpenSiblingPanel, PanelConfig, SaveConfig } from "@foxglove/studio-base/types/panels";
@@ -493,7 +493,7 @@ export default function Panel<
 
     const perfInfo = useRef<HTMLDivElement>(ReactNull);
     const quickActionsOverlayRef = useRef<HTMLDivElement>(ReactNull);
-    const onDragStart = useCallback(() => {
+/*     const onDragStart = useCallback(() => {
       // Temporarily hide the overlay so that the panel can be shown as the drag preview image --
       // even though the overlay is a sibling rather than a child, Chrome still includes it in the
       // preview if it is visible. Changing the appearance in the next React render cycle is not
@@ -504,10 +504,10 @@ export default function Panel<
         overlay.style.opacity = "0";
         setTimeout(() => (overlay.style.opacity = "1"), 0);
       }
-    }, []);
-    const dragSpec = { tabId, panelId: childId, onDragStart };
+    }, []); */
+/*     const dragSpec = { tabId, panelId: childId, onDragStart };
     const [connectOverlayDragSource, connectOverlayDragPreview] = usePanelDrag(dragSpec);
-    const [connectToolbarDragHandle, connectToolbarDragPreview] = usePanelDrag(dragSpec);
+    const [connectToolbarDragHandle, connectToolbarDragPreview] = usePanelDrag(dragSpec); */
 
     const panelOverlayProps = useMemo(() => {
       const overlayProps: PanelOverlayProps = {
@@ -625,7 +625,7 @@ export default function Panel<
             isFullscreen: fullscreen,
             tabId,
             // disallow dragging the root panel in a layout
-            connectToolbarDragHandle: isTopLevelPanel ? undefined : connectToolbarDragHandle,
+            connectToolbarDragHandle: undefined,
             setMessagePathDropConfig,
           }}
         >
@@ -654,8 +654,8 @@ export default function Panel<
                   panelRootRef.current = el;
                   // disallow dragging the root panel in a layout
                   if (!isTopLevelPanel) {
-                    connectOverlayDragPreview(el);
-                    connectToolbarDragPreview(el);
+                    // connectOverlayDragPreview(el);
+                    // connectToolbarDragPreview(el);
                   }
                   connectMessagePathDropTarget(el);
                 }}
@@ -667,7 +667,7 @@ export default function Panel<
                       quickActionsOverlayRef.current = el;
                       // disallow dragging the root panel in a layout
                       if (!isTopLevelPanel) {
-                        connectOverlayDragSource(el);
+                        // connectOverlayDragSource(el);
                       }
                     }}
                   />
