@@ -76,6 +76,30 @@ yarn lint         # lint all files
 yarn test         # run all tests
 yarn test:watch   # run tests on changed files
 ```
+
+## Deployment
+
+The app is currently built and deployed from a developer machine:
+
+```
+# Build the app
+yarn install --immutable
+rm -r web/.webpack/*
+yarn run web:build:prod
+
+# Specify target Azure storage account
+StorageAccountName="stplaymladev" # or "stplaymlaprodweu" for production
+
+# Remove existing files
+az storage blob delete-batch --source '$web' --pattern "*" --account-name $StorageAccountName --auth-mode login
+
+# Upload index.html without caching
+az storage blob upload --file web/.webpack/index.html --container-name '$web' --name 'index.html' --account-name $StorageAccountName --content-cache 'no-store, must-revalidate' --auth-mode login
+
+# Overwrite all other files with default caching
+az storage blob upload-batch --destination '$web' --source web/.webpack --account-name $StorageAccountName --overwrite False --auth-mode login
+```
+
 ## For more info
 - View the buried original documentation about contributing [here](https://github.com/foxglove/studio/edit/main/CONTRIBUTING.md)
 
