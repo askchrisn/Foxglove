@@ -20,7 +20,7 @@ import { useWorkspaceActions } from "@foxglove/studio-base/context/Workspace/use
 import { AppEvent } from "@foxglove/studio-base/services/IAnalytics";
 
 import Connection from "./Connection";
-import Start from "./Start";
+// import Start from "./Start";
 
 const DataSourceDialogItems = ["start", "file", "demo", "remote", "connection"] as const;
 export type DataSourceDialogItem = (typeof DataSourceDialogItems)[number];
@@ -114,8 +114,8 @@ export function DataSourceDialog(props: DataSourceDialogProps): JSX.Element {
         };
       default:
         return {
-          title: "Get started",
-          component: <Start />,
+          title: "",
+          component: <></>,
         };
     }
   }, [activeView]);
